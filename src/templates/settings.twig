@@ -1,0 +1,54 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Helpdesk Support plugin for Craft CMS 3.x
+ *
+ * Helpdesk Support Settings.twig
+ *
+ * @author    Jarrod D Nix
+ * @copyright Copyright (c) 2019 Jarrod D Nix
+ * @link      https://jarrodnix.me
+ * @package   HelpdeskSupport
+ * @since     0.1.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("jrrdnx\\helpdesksupport\\assetbundles\\helpdesksupport\\HelpdeskSupportAsset") %}
+
+{{ forms.autosuggestField({
+    label: 'Provider',
+    instructions: 'Valid options are \'freshdesk\', \'teamworkdesk\', and \'zendesksupport\'.',
+    id: 'apiProvider',
+    name: 'apiProvider',
+    value: settings['apiProvider'],
+	suggestEnvVars: true})
+}}
+
+{{ forms.autosuggestField({
+    label: 'Domain',
+    instructions: '',
+    id: 'apiDomain',
+    name: 'apiDomain',
+    value: settings['apiDomain'],
+	suggestEnvVars: true})
+}}
+
+{{ forms.autosuggestField({
+    label: 'Username',
+    instructions: '',
+    id: 'apiUsername',
+    name: 'apiUsername',
+    value: settings['apiUsername'],
+	suggestEnvVars: true})
+}}
+
+{{ forms.autosuggestField({
+    label: 'API Token/Key',
+    instructions: '',
+    id: 'apiToken',
+    name: 'apiToken',
+    value: settings['apiToken'],
+	suggestEnvVars: true})
+}}

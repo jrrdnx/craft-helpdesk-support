@@ -1,0 +1,52 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Helpdesk Support plugin for Craft CMS 3.x
+ *
+ * Helpdesk Support index.twig
+ *
+ * @author    Jarrod D Nix
+ * @copyright Copyright (c) 2019 Jarrod D Nix
+ * @link      https://jarrodnix.me
+ * @package   HelpdeskSupport
+ * @since     0.1.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("jrrdnx\\helpdesksupport\\assetbundles\\helpdesksupport\\HelpdeskSupportAsset") %}
+
+{# Link for the ? icon at the bottom of the page #}
+{% set docsUrl = "https://github.com/jrrdnx/helpdesk-support/blob/master/README.md" %}
+
+{# The title of this CP section #}
+{% set title = "Invalid Settings" %}
+
+{# The URL to this plugin's base CP section #}
+{% set pluginCpUrl = url('helpdesk-support') %}
+
+{# Get a URL to an image in our AssetBundle #}
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@jrrdnx/helpdesksupport/assetbundles/viewticketscpsection/dist', true) ~ '/img/ViewTickets-icon.svg' %}
+
+{% set subnav = {
+    "create-new-ticket": { label: "Create New Ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
+    "view-tickets": { label: "View Tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
+} %}
+
+{% set crumbs = [
+    { label: "Helpdesk Support", url: url(pluginCpUrl) },
+] %}
+
+{# Content that should appear in the page header#}
+{% set extraPageHeaderHtml %}
+    <div class="buttons">
+        <a href="{{ pluginCpUrl }}" class="btn submit add icon">{{ "Click Me!"|t('helpdesk-support') }}</a>
+    </div>
+{% endset %}
+
+{# The content of the CP Section#}
+{% set content %}
+    <p class="invalid-settings">Helpdesk Support is missing one or more settings. Please <a href="{{ url('settings/plugins/helpdesk-support') }}">update your settings</a></p>
+{% endset %}
