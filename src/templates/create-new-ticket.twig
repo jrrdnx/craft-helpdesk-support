@@ -15,6 +15,7 @@
 
 {% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
+{% set fullPageForm = true %}
 
 {% do view.registerAssetBundle("jrrdnx\\helpdesksupport\\assetbundles\\helpdesksupport\\HelpdeskSupportAsset") %}
 {% do view.registerAssetBundle("jrrdnx\\helpdesksupport\\assetbundles\\createnewticketcpsection\\CreateNewTicketCPSectionAsset") %}
@@ -50,8 +51,62 @@
 {% endset %}
 
 {# The content of the CP Section#}
+{% block actionButton %}{% endblock %}
+
 {% set content %}
-    <h2>{{ "CreateNewTicket CP Section body goes here"|t('helpdesk-support') }}</h2>
-    <img src="{{ iconUrl }}" height="64" width="64" />
-    <p class="textline"></p>
+
+	<input type="hidden" name="action" value="helpdesk-support/tickets/save-new-ticket">
+
+	{% if ticketErrors is defined %}
+		<div class="ticket-errors">
+			<ul>
+				{% for error in ticketErrors %}
+					<li>{{ error }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+
+	{{ forms.textField({
+		label: 'Subject',
+		instructions: 'Provide a brief description of your request.',
+		id: 'subject',
+		name: 'subject',
+		value: subject,
+		required: true})
+	}}
+
+	{{ forms.selectField({
+		label: 'Priority',
+		instructions: 'The urgency with which the ticket should be addressed.',
+		id: 'priority',
+		name: 'priority',
+		options: priorityOptions,
+		value: priority,
+		required: true})
+	}}
+
+	{{ forms.textareaField({
+		rows: 8,
+		label: 'Description',
+		instructions: 'Please enter the details of your request. Make sure to include specific website urls (e.g. ' ~ craft.app.request.getHostInfo() ~ '/broken-page) if applicable. A member of our support staff will respond as soon as possible.',
+		id: 'description',
+		name: 'description',
+		value: description,
+		required: true})
+	}}
+
+	{{ forms.elementSelectField({
+		label: 'Attachments',
+		instructions: '',
+		id: 'attachments',
+		name: 'attachments',
+		limit: 10,
+		elementType: 'craft\\elements\\Asset'})
+	}}
+
+	<div class="btngroup submit first">
+		<input type="submit" class="btn submit" value="Create Ticket">
+	</div>
+
 {% endset %}

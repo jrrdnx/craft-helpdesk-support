@@ -42,7 +42,7 @@ class ZendeskSupport extends Component
      */
     public function getCurrentUser()
     {
-		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "users/search", "get", array("query" => "jnix@reusserdesign.com"));//Craft::$app->getUser()->getIdentity()->email));
+		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "users/search", "get", array("query" => Craft::$app->getUser()->getIdentity()->email));
 		if($response["http_code"] !== 200)
 		{
 			return null;
@@ -163,6 +163,33 @@ class ZendeskSupport extends Component
 	}
 
 	/**
+     * POST a new ticket
+     *
+     *     HelpdeskSupport::$plugin->zendeskSupport->createTicket()
+     *
+     * @return mixed
+     */
+	public function createTicket(int $userId, string $description, string $priority, string $subject = '', array $attachmentTokens = array())
+	{
+		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "tickets", "post", array(
+			'subject' => $subject,
+			'priority' => $priority,
+			'status' => 'new',
+			'requester_id' => $userId,
+			'comment' => [
+				'body' => $description,
+				'uploads' => $attachmentTokens
+			],
+		));
+		if($response["http_code"] !== 201)
+		{
+			return null;
+		}
+
+		return json_decode($response["data"])->ticket;
+	}
+
+	/**
      * POST an attachment to upload
      *
      *     HelpdeskSupport::$plugin->zendeskSupport->uploadAttachment($assetId)
@@ -195,7 +222,7 @@ class ZendeskSupport extends Component
 	public function updateTicket(int $ticketId, string $reply, int $userId, array $attachmentTokens = array())
 	{
 		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "tickets/" . $ticketId, "put", array(
-			'comment'  => [
+			'comment' => [
 				'body' => $reply,
 				'uploads' => $attachmentTokens,
 				'author_id' => $userId
@@ -208,5 +235,36 @@ class ZendeskSupport extends Component
 		}
 
 		return json_decode($response["data"]);
+	}
+
+	/**
+	 * Return a list of priorty options for a selectField form element
+	 *
+	 * @return array
+	 */
+	public function getPriorityOptions()
+	{
+		return array(
+			array(
+				'label' => 'Select priority...',
+				'value' => null,
+			),
+			array(
+				'label' => 'Urgent',
+				'value' => 'urgent'
+			),
+			array(
+				'label' => 'High',
+				'value' => 'high'
+			),
+			array(
+				'label' => 'Normal',
+				'value' => 'normal'
+			),
+			array(
+				'label' => 'Low',
+				'value' => 'low'
+			)
+		);
 	}
 }

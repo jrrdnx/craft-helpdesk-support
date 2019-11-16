@@ -134,6 +134,13 @@ class Core extends Component
 		curl_setopt($curl, CURLOPT_URL, $requestUrl);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
+		if($apiService == "zendeskSupport" && $endpoint == "tickets" && $method == "post")
+		{
+			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+			$headers[] = "Content-Type: application/json";
+			curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
+		}
+		else
 		if($method == "post")
 		{
 			curl_setopt($curl, CURLOPT_POST, true);

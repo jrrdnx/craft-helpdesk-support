@@ -11,7 +11,7 @@
 namespace jrrdnx\helpdesksupport\widgets;
 
 use jrrdnx\helpdesksupport\HelpdeskSupport;
-use jrrdnx\helpdesksupport\assetbundles\ticketswidget\TicketsWidgetAsset;
+use jrrdnx\helpdesksupport\assetbundles\helpdesksupport\HelpdeskSupportAsset;
 
 use Craft;
 use craft\base\Widget;
@@ -37,7 +37,7 @@ class Tickets extends Widget
     /**
      * @var string The message to display
      */
-    public $message = 'Hello, world.';
+    public $colspan = 3;
 
     // Static Methods
     // =========================================================================
@@ -57,10 +57,17 @@ class Tickets extends Widget
      *
      * @return string|null The path to the widget’s SVG icon
      */
-    public static function iconPath()
+    public static function icon()
     {
-        return Craft::getAlias("@jrrdnx/helpdesksupport/assetbundles/ticketswidget/dist/img/Tickets-icon.svg");
-    }
+		if($apiService = HelpdeskSupport::$plugin->core->getApiService())
+		{
+			return Craft::getAlias("@jrrdnx/helpdesksupport/assetbundles/ticketswidget/dist/img/Tickets-icon-" . strtolower($apiService) . ".svg");
+		}
+		else
+		{
+			return Craft::getAlias("@jrrdnx/helpdesksupport/assetbundles/ticketswidget/dist/img/Tickets-icon.svg");
+		}
+	}
 
     /**
      * Returns the widget’s maximum colspan.
@@ -88,13 +95,13 @@ class Tickets extends Widget
     public function rules()
     {
         $rules = parent::rules();
-        $rules = array_merge(
-            $rules,
-            [
-                ['message', 'string'],
-                ['message', 'default', 'value' => 'Hello, world.'],
-            ]
-        );
+        // $rules = array_merge(
+        //     $rules,
+        //     [
+        //         ['message', 'string'],
+        //         ['message', 'default', 'value' => 'Hello, world.'],
+        //     ]
+        // );
         return $rules;
     }
 
@@ -209,12 +216,36 @@ class Tickets extends Widget
      */
     public function getBodyHtml()
     {
-        Craft::$app->getView()->registerAssetBundle(TicketsWidgetAsset::class);
+		Craft::$app->getView()->registerAssetBundle(HelpdeskSupportAsset::class);
+
+		// Ensure settings are valid and get the chosen provider
+		if(!($apiService = HelpdeskSupport::$plugin->core->getApiService()))
+		{
+			return Craft::$app->getView()->renderTemplate(
+				'helpdesk-support/_components/widgets/Tickets_invalid_settings'
+			);
+		}
+
+		// Get current user
+		$user = HelpdeskSupport::$plugin->{$apiService}->getCurrentUser();
+		if(!$user)
+		{
+			return $this->renderTemplate(
+				'helpdesk-support/_components/widgets/Tickets_body',
+				[
+					'userFound' => false
+				]
+			);
+		}
+
+		// Get tickets for user
+		$tickets = HelpdeskSupport::$plugin->{$apiService}->getTicketsForUser($user->id);
 
         return Craft::$app->getView()->renderTemplate(
             'helpdesk-support/_components/widgets/Tickets_body',
             [
-                'message' => $this->message
+				'userFound' => true,
+                'tickets' => $tickets
             ]
         );
     }

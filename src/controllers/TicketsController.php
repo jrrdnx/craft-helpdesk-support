@@ -53,7 +53,7 @@ class TicketsController extends Controller
 	// =========================================================================
 
 	/**
-     * Handle a request going to our plugin's index action URL,
+     * Handle a GET request going to our plugin's index action URL,
      * e.g.: actions/helpdesk-support/view-tickets
      *
      * @return mixed
@@ -93,7 +93,7 @@ class TicketsController extends Controller
     }
 
     /**
-     * Handle a request going to our plugin's createNewTicket URL,
+     * Handle a GET request going to our plugin's createNewTicket URL,
      * e.g.: actions/helpdesk-support/create-new-ticket
      *
      * @return mixed
@@ -108,13 +108,123 @@ class TicketsController extends Controller
 			);
 		}
 
-        return $this->renderTemplate(
-			'helpdesk-support/create-new-ticket'
+		return $this->renderTemplate(
+			'helpdesk-support/create-new-ticket',
+			[
+				'priorityOptions' => HelpdeskSupport::$plugin->{$apiService}->getPriorityOptions(),
+				'subject' => '',
+				'priority' => '',
+				'description' => ''
+			]
 		);
-    }
+	}
+
+	/**
+     * Handle a POST request going to our plugin's createNewTicket action URL,
+     * e.g.: actions/helpdesk-support/create-new-ticket
+     *
+     * @return mixed
+     */
+	public function actionSaveNewTicket()
+	{
+		// Ensure settings are valid and get the chosen provider
+		if(!($apiService = HelpdeskSupport::$plugin->core->getApiService()))
+		{
+			return $this->renderTemplate(
+				'helpdesk-support/invalid-settings'
+			);
+		}
+
+		$this->requirePostRequest();
+		$request = Craft::$app->getRequest();
+
+		// Get current user
+		$user = HelpdeskSupport::$plugin->{$apiService}->getCurrentUser();
+		if(!$user)
+		{
+			// Return to ticket list if user not found
+			$this->redirect('/admin/helpdesk-support/view-tickets');
+		}
+
+		$subject = $request->getBodyParam('subject');
+		$priority = $request->getRequiredBodyParam('priority');
+		$description = $request->getRequiredBodyParam('description');
+		$attachments = $request->getBodyParam('attachments');
+
+		$errors = array();
+		if(empty($priority))
+		{
+			$errors[] = "Priority is a required field";
+		}
+		if(empty($description))
+		{
+			$errors[] = "Description is a required field";
+		}
+
+		$priorityOptions = HelpdeskSupport::$plugin->{$apiService}->getPriorityOptions();
+
+		if(!empty($errors))
+		{
+			return $this->renderTemplate(
+				'helpdesk-support/create-new-ticket',
+				[
+					'ticketErrors' => $errors,
+					'priorityOptions' => $priorityOptions,
+					'subject' => $subject,
+					'priority' => $priority,
+					'description' => $description
+				]
+			);
+		}
+
+		$attachmentTokens = array();
+		if($attachments)
+		{
+			foreach($attachments as $assetId)
+			{
+				$asset = Craft::$app->assets->getAssetById((int) $assetId);
+				$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId);
+				if(!$attachmentToken)
+				{
+					return $this->renderTemplate(
+						'helpdesk-support/create-new-ticket',
+						[
+							'ticketErrors' => array("Error uploading file: " . $asset->getFilename()),
+							'priorityOptions' => $priorityOptions,
+							'subject' => $subject,
+							'priority' => $priority,
+							'description' => $description
+						]
+					);
+				}
+				else
+				{
+					$attachmentTokens[] = $attachmentToken;
+				}
+			}
+		}
+
+		// Update ticket
+		$newTicket = HelpdeskSupport::$plugin->{$apiService}->createTicket($user->id, $description, $priority, $subject, $attachmentTokens);
+		if(!$newTicket)
+		{
+			return $this->renderTemplate(
+				'helpdesk-support/create-new-ticket',
+				[
+					'ticketErrors' => array("Error creating a new ticket. Please try again."),
+					'priorityOptions' => $priorityOptions,
+					'subject' => $subject,
+					'priority' => $priority,
+					'description' => $description
+				]
+			);
+		}
+
+		return $this->redirect('/admin/helpdesk-support/view-ticket/' . $newTicket->id);
+	}
 
     /**
-     * Handle a request going to our plugin's viewTicket URL,
+     * Handle a GET request going to our plugin's viewTicket URL,
      * e.g.: actions/helpdesk-support/view-ticket/XXXXXX
      *
      * @return mixed
@@ -161,7 +271,7 @@ class TicketsController extends Controller
     }
 
 	/**
-     * Handle a request going to our plugin's viewTicket action URL,
+     * Handle a POST request going to our plugin's viewTicket action URL,
      * e.g.: actions/helpdesk-support/view-ticket/XXXXXX
      *
      * @return mixed
@@ -224,7 +334,6 @@ class TicketsController extends Controller
 		}
 
 		$attachmentTokens = array();
-
 		if($attachments)
 		{
 			foreach($attachments as $assetId)
@@ -249,7 +358,7 @@ class TicketsController extends Controller
 			}
 		}
 
-		// Update a ticket
+		// Update ticket
 		$updateTicket = HelpdeskSupport::$plugin->{$apiService}->updateTicket($ticket->id, $reply, $user->id, $attachmentTokens);
 		if(!$updateTicket)
 		{

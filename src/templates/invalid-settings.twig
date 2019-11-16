@@ -34,6 +34,11 @@
     "create-new-ticket": { label: "Create New Ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
     "view-tickets": { label: "View Tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
 } %}
+{% if craft.app.request.getSegment(2) == "create-new-ticket" %}
+	{% set selectedSubnavItem = 'create-new-ticket' %}
+{% elseif craft.app.request.getSegment(2) == "view-tickets" %}
+	{% set selectedSubnavItem = 'view-tickets' %}
+{% endif %}
 
 {% set crumbs = [
     { label: "Helpdesk Support", url: url(pluginCpUrl) },
@@ -48,5 +53,7 @@
 
 {# The content of the CP Section#}
 {% set content %}
-    <p class="invalid-settings">Helpdesk Support is missing one or more settings. Please <a href="{{ url('settings/plugins/helpdesk-support') }}">update your settings</a></p>
+
+	<p class="invalid-settings">Helpdesk Support is missing one or more settings. Please <a href="{{ url('settings/plugins/helpdesk-support') }}">update your settings</a></p>
+
 {% endset %}
