@@ -50,7 +50,7 @@ class Settings extends Model
 
 	public function getApiProvider(): string
 	{
-		return Craft::parseEnv($this->apiProvider);
+		return strtolower(preg_replace("/[^A-Za-z0-9]/", '', Craft::parseEnv($this->apiProvider)));
 	}
 
 	public function getApiDomain(): string
