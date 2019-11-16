@@ -77,6 +77,22 @@
 }
 
 /**
+ *	Ticket Errors
+ */
+.ticket-errors {
+	color: #d55845;
+	background-color: rgba(213, 88, 69, .1);
+	border: 1px solid #d55845;
+	border-radius: 2px;
+}
+
+.ticket-errors ul {
+	list-style: initial;
+	margin: 16px 0;
+	padding-left: 40px;
+}
+
+/**
  *	Ticket Details
  */
 .ticket-details-sidebar > div {
@@ -149,4 +165,95 @@
 .ticket-details-sidebar > div span.no-attachments {
 	margin-top: -8px;
 	font-weight: 700;
+}
+
+/**
+ *		TICKET COMMENTS
+ */
+.ticket-comments {
+	margin-bottom: 32px;
+}
+
+.ticket-comments .ticket-comment {
+	padding: 28px 0;
+	border-bottom: 1px solid #ebebeb;
+}
+
+.ticket-comments .ticket-comment header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 24px;
+	font-size: 12px;
+}
+
+.ticket-comments .ticket-comment header .img {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	margin-right: 16px;
+	background-color: #ddd;
+	border-radius: 50%;
+}
+
+.ticket-comments .ticket-comment header .img img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 100%;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.ticket-comments .ticket-comment header .img svg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 40%;
+	transform: translate(-50%, -50%);
+}
+
+.ticket-comments .ticket-comment header .img svg path {
+	fill: white;
+}
+
+.ticket-comments .ticket-comment header .img + div span {
+	display: block;
+}
+
+.ticket-comments .ticket-comment header .img + div span:first-of-type {
+	font-weight: 700;
+}
+
+.ticket-comments .ticket-comment .attachments {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 24px;
+}
+
+.ticket-comments .ticket-comment .attachments a {
+	display: flex;
+	align-items: center;
+	margin-right: 8px;
+	margin-bottom: 4px;
+	padding: 4px 8px;
+	color: #d55845;
+	text-decoration: none;
+	background-color: #e8e8e8;
+	border-radius: 2px;
+}
+
+.ticket-comments .ticket-comment .attachments a:hover,
+.ticket-comments .ticket-comment .attachments a:focus {
+	color: white;
+	background-color: #d55845;
+}
+
+.ticket-comments .ticket-comment .attachments a svg {
+	width: 9px;
+	height: 12px;
+	margin-right: 8px;
+}
+
+.ticket-comments .ticket-comment .attachments a svg path {
+	fill: currentColor;
 }

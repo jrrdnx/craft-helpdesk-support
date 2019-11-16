@@ -28,7 +28,7 @@
 
 {{ forms.autosuggestField({
     label: 'Domain',
-    instructions: '',
+    instructions: 'Follow the instructions for your helpdesk platform below...',
     id: 'apiDomain',
     name: 'apiDomain',
     value: settings['apiDomain'],
@@ -37,7 +37,7 @@
 
 {{ forms.autosuggestField({
     label: 'Username',
-    instructions: '',
+    instructions: 'Follow the instructions for your helpdesk platform below...',
     id: 'apiUsername',
     name: 'apiUsername',
     value: settings['apiUsername'],
@@ -46,9 +46,28 @@
 
 {{ forms.autosuggestField({
     label: 'API Token/Key',
-    instructions: '',
+    instructions: 'Follow the instructions for your helpdesk platform below...',
     id: 'apiToken',
     name: 'apiToken',
     value: settings['apiToken'],
 	suggestEnvVars: true})
 }}
+
+<h2>Freshdesk</h2>
+<p><strong>Domain: </strong> <em>(Required)</em> This is the freshdesk.com subdomain associated with your account.</p>
+<p><strong>Username: </strong> <em>(Not Required)</em></p>
+<p><strong>API Token: </strong> <em>(Required)</em> </p>
+
+<hr />
+
+<h2>Teamwork Desk</h2>
+<p><strong>Domain: </strong> <em>(Required)</em> This is the teamwork.com subdomain associated with your account.</p>
+<p><strong>Username: </strong> <em>(Not Required)</em></p>
+<p><strong>API Token: </strong> <em>(Required)</em> From your Teamwork Desk account, click your avatar and choose "View Profile". On your profile page, choose the API Keys menu and create a new key or copy your existing API Key here.</p>
+
+<hr />
+
+<h2>Zendesk Support</h2>
+<p><strong>Domain: </strong> <em>(Required)</em> This is the zendesk.com subdomain associated with your account.</p>
+<p><strong>Username: </strong> <em>(Required)</em> The email address or the owner or administrator for your account. Certain API endpoints require agent-level access, and this ensures that those endspoints can be accessed. Comments will appear as "[Administrator] submitted on behalf of [End User]".</p>
+<p><strong>API Token: </strong> <em>(Required)</em> From your Zendesk account, choose the Admin navigation in the sidebar. Then under the Channel heading, choose API. Enable Token Access if necessary, then add a new API Token.</p>

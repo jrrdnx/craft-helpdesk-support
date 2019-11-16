@@ -154,8 +154,116 @@ class TicketsController extends Controller
         return $this->renderTemplate(
 			'helpdesk-support/view-ticket',
 			[
-				'ticket' => $ticket
+				'ticket' => $ticket,
+				'reply' => ''
 			]
 		);
     }
+
+	/**
+     * Handle a request going to our plugin's viewTicket action URL,
+     * e.g.: actions/helpdesk-support/view-ticket/XXXXXX
+     *
+     * @return mixed
+     */
+    public function actionUpdateTicket()
+    {
+		$this->requirePostRequest();
+		$request = Craft::$app->getRequest();
+
+		// Return to ticket list if ID not provided
+		$ticketId = intval( $request->getRequiredBodyParam('ticketId') );
+		if($ticketId <= 0)
+		{
+			return $this->redirect('/admin/helpdesk-support/view-tickets');
+		}
+
+		// Ensure settings are valid and get the chosen provider
+		if(!($apiService = HelpdeskSupport::$plugin->core->getApiService()))
+		{
+			return $this->renderTemplate(
+				'helpdesk-support/invalid-settings'
+			);
+		}
+
+		// Get current user
+		$user = HelpdeskSupport::$plugin->{$apiService}->getCurrentUser();
+		if(!$user)
+		{
+			// Return to ticket list if user not found
+			$this->redirect('/admin/helpdesk-support/view-tickets');
+		}
+
+		// Get ticket info
+		$ticket = HelpdeskSupport::$plugin->{$apiService}->getTicket($ticketId, $user->id);
+		if(!$ticket)
+		{
+			// Return to ticket list if ticket not found
+			return $this->redirect('/admin/helpdesk-support/view-tickets');
+		}
+
+		$reply = $request->getRequiredBodyParam('reply');
+		$attachments = $request->getBodyParam('attachments');
+
+		$errors = array();
+		if(empty($reply))
+		{
+			$errors[] = "Reply is a required field";
+		}
+
+		if(!empty($errors))
+		{
+			return $this->renderTemplate(
+				'helpdesk-support/view-ticket',
+				[
+					'ticket' => $ticket,
+					'reply' => '',
+					'ticketErrors' => $errors
+				]
+			);
+		}
+
+		$attachmentTokens = array();
+
+		if($attachments)
+		{
+			foreach($attachments as $assetId)
+			{
+				$asset = Craft::$app->assets->getAssetById((int) $assetId);
+				$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId);
+				if(!$attachmentToken)
+				{
+					return $this->renderTemplate(
+						'helpdesk-support/view-ticket',
+						[
+							'ticket' => $ticket,
+							'reply' => $reply,
+							'ticketErrors' => array("Error uploading file: " . $asset->getFilename())
+						]
+					);
+				}
+				else
+				{
+					$attachmentTokens[] = $attachmentToken;
+				}
+			}
+		}
+
+		// Update a ticket
+		$updateTicket = HelpdeskSupport::$plugin->{$apiService}->updateTicket($ticket->id, $reply, $user->id, $attachmentTokens);
+		if(!$updateTicket)
+		{
+			return $this->renderTemplate(
+				'helpdesk-support/view-ticket',
+				[
+					'ticket' => $ticket,
+					'reply' => $reply,
+					'ticketErrors' => array("There was an error saving your reply. Please try again.")
+				]
+			);
+		}
+
+		return $this->redirect('/admin/helpdesk-support/view-ticket/' . $ticket->id);
+
+	}
 }

@@ -95,17 +95,15 @@ class Core extends Component
      */
     public function curlInit(string $apiService, string $endpoint, string $method = "get", array $options = array())
     {
-		$curl		= null;
-		$headers	= array();
-
 		if(!$endpoint)
 		{
-			return $curl;
+			return null;
 		}
 
-		$curl = curl_init();
+		$headers	= array();
+		$curl		= curl_init();
 
-		// set URL and other appropriate options
+		// determine URL and authenticate
 		if($apiService === "freshdesk")
 		{
 			$requestUrl = "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".freshdesk.com/api/v2/" . $endpoint;
@@ -141,9 +139,16 @@ class Core extends Component
 			curl_setopt($curl, CURLOPT_POST, true);
 			if($options)
 			{
-				if(isset($options["file"]) && isset($options["uploadType"]))
+				if($apiService === "teamworkDesk" && isset($options["file"]) && isset($options["uploadType"]) && isset($options["fileName"]))
 				{
 					$curlFile = curl_file_create($options["file"], $options["uploadType"], $options["fileName"]);
+					$options["file"] = $curlFile;
+					curl_setopt($curl, CURLOPT_POSTFIELDS, $options);
+				}
+				else
+				if($apiService === "zendeskSupport" && isset($options["file"]) && isset($options["mimeType"]) && isset($options["filename"]))
+				{
+					$curlFile = curl_file_create($options["file"], $options["mimeType"], $options["filename"]);
 					$options["file"] = $curlFile;
 					curl_setopt($curl, CURLOPT_POSTFIELDS, $options);
 				}
@@ -154,9 +159,14 @@ class Core extends Component
 			}
 		}
 		else
-		if($method == "delete" || $method == "put")
+		if($method == "put")
 		{
-			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+			if($apiService === "zendeskSupport" && $options)
+			{
+				$headers[] = "Content-Type: application/json";
+				curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
+			}
 		}
 
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);

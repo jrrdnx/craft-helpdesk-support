@@ -34,7 +34,7 @@ class ZendeskSupport extends Component
     // =========================================================================
 
     /**
-     * Get the user object for the currently logged in user
+     * GET the user object for the currently logged in user
      *
      *     HelpdeskSupport::$plugin->zendeskSupport->getCurrentUser()
      *
@@ -52,7 +52,7 @@ class ZendeskSupport extends Component
 	}
 
 	/**
-	 * Get all tickets for the given user
+	 * GET all tickets for the given user
 	 *
 	 * 		HelpdeskSupport::$plugin->zendeskSupport->getTicketsForUser($userId)
 	 */
@@ -101,7 +101,7 @@ class ZendeskSupport extends Component
 	}
 
 	/**
-     * Get the ticket object for the requested ticket ID
+     * GET the ticket object for the requested ticket ID
      *
      *     HelpdeskSupport::$plugin->zendeskSupport->getTicket($ticketId)
      *
@@ -160,5 +160,53 @@ class ZendeskSupport extends Component
 		$ticket->hsUpdatedAt = $ticket->updated_at;
 
 		return $ticket;
+	}
+
+	/**
+     * POST an attachment to upload
+     *
+     *     HelpdeskSupport::$plugin->zendeskSupport->uploadAttachment($assetId)
+     *
+     * @return mixed
+     */
+	public function uploadAttachment(int $assetId)
+	{
+		$asset = Craft::$app->assets->getAssetById((int) $assetId);
+		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "uploads", "post", array(
+			'filename' => $asset->getFilename(),
+			'file' => $asset->getTransformSource(),
+			'mimeType' => $asset->getMimeType()
+		));
+		if($response["http_code"] !== 201)
+		{
+			return null;
+		}
+
+		return json_decode($response["data"])->upload->token;
+	}
+
+	/**
+     * PUT a ticket update
+     *
+     *     HelpdeskSupport::$plugin->zendeskSupport->updateTicket($ticketId, $reply, $userId, $attachmentTokens)
+     *
+     * @return mixed
+     */
+	public function updateTicket(int $ticketId, string $reply, int $userId, array $attachmentTokens = array())
+	{
+		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "tickets/" . $ticketId, "put", array(
+			'comment'  => [
+				'body' => $reply,
+				'uploads' => $attachmentTokens,
+				'author_id' => $userId
+			],
+			'status' => 'open'
+		));
+		if($response["http_code"] !== 200)
+		{
+			return null;
+		}
+
+		return json_decode($response["data"]);
 	}
 }
