@@ -18,7 +18,7 @@ use craft\base\Component;
 /**
  * Freshdesk Service
  *
- * All of your plugin’s business logic should go in services, including saving data,
+ * All of your plugin's business logic should go in services, including saving data,
  * retrieving data, etc. They provide APIs that your controllers, template variables,
  * and other plugins can interact with.
  *

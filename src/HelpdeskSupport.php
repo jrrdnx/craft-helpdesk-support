@@ -29,11 +29,11 @@ use craft\events\RegisterUrlRulesEvent;
 use yii\base\Event;
 
 /**
- * Craft plugins are very much like little applications in and of themselves. We’ve made
+ * Craft plugins are very much like little applications in and of themselves. We've made
  * it as simple as we can, but the training wheels are off. A little prior knowledge is
  * going to be required to write a plugin.
  *
- * For the purposes of the plugin docs, we’re going to assume that you know PHP and SQL,
+ * For the purposes of the plugin docs, we're going to assume that you know PHP and SQL,
  * as well as some semi-advanced concepts like object-oriented programming and PHP namespaces.
  *
  * https://craftcms.com/docs/plugins/introduction
@@ -66,7 +66,7 @@ class HelpdeskSupport extends Plugin
     // =========================================================================
 
     /**
-     * To execute your plugin’s migrations, you’ll need to increase its schema version.
+     * To execute your plugin's migrations, you'll need to increase its schema version.
      *
      * @var string
      */
@@ -199,7 +199,7 @@ class HelpdeskSupport extends Plugin
     // =========================================================================
 
     /**
-     * Creates and returns the model used to store the plugin’s settings.
+     * Creates and returns the model used to store the plugin's settings.
      *
      * @return \craft\base\Model|null
      */

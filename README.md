@@ -20,7 +20,7 @@ To install the plugin, follow these instructions.
 
         composer require jrrdnx/helpdesk-support
 
-3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Helpdesk Support.
+3. In the Control Panel, go to Settings → Plugins and click the "Install" button for Helpdesk Support.
 
 ## Helpdesk Support Overview
 

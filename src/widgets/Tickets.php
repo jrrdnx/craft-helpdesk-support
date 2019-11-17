@@ -20,7 +20,7 @@ use craft\base\Widget;
  * Helpdesk Support Widget
  *
  * Dashboard widgets allow you to display information in the Admin CP Dashboard.
- * Adding new types of widgets to the dashboard couldn’t be easier in Craft
+ * Adding new types of widgets to the dashboard couldn't be easier in Craft
  *
  * https://craftcms.com/docs/plugins/widgets
  *
@@ -53,9 +53,9 @@ class Tickets extends Widget
     }
 
     /**
-     * Returns the path to the widget’s SVG icon.
+     * Returns the path to the widget's SVG icon.
      *
-     * @return string|null The path to the widget’s SVG icon
+     * @return string|null The path to the widget's SVG icon
      */
     public static function icon()
     {
@@ -70,9 +70,9 @@ class Tickets extends Widget
 	}
 
     /**
-     * Returns the widget’s maximum colspan.
+     * Returns the widget's maximum colspan.
      *
-     * @return int|null The widget’s maximum colspan, if it has one
+     * @return int|null The widget's maximum colspan, if it has one
      */
     public static function maxColspan()
     {
@@ -106,7 +106,7 @@ class Tickets extends Widget
     }
 
     /**
-     * Returns the component’s settings HTML.
+     * Returns the component's settings HTML.
      *
      * An extremely simple implementation would be to directly return some HTML:
      *
@@ -124,7 +124,7 @@ class Tickets extends Widget
      * ]);
      * ```
      *
-     * If you need to tie any JavaScript code to your settings, it’s important to know that any `name=` and `id=`
+     * If you need to tie any JavaScript code to your settings, it's important to know that any `name=` and `id=`
      * attributes within the returned HTML will probably get [[\craft\web\View::namespaceInputs() namespaced]],
      * however your JavaScript code will be left untouched.
      *
@@ -148,11 +148,11 @@ class Tickets extends Widget
      * </script>
      * ```
      *
-     * As you can see, that JavaScript code will not be able to find the textarea, because the textarea’s `id=`
+     * As you can see, that JavaScript code will not be able to find the textarea, because the textarea's `id=`
      * attribute was changed from `foo` to `namespace-foo`.
      *
      * Before you start adding `namespace-` to the beginning of your element ID selectors, keep in mind that the actual
-     * namespace is going to change depending on the context. Often they are randomly generated. So it’s not quite
+     * namespace is going to change depending on the context. Often they are randomly generated. So it's not quite
      * that simple.
      *
      * Thankfully, [[\craft\web\View]] service provides a couple handy methods that can help you deal
@@ -162,7 +162,7 @@ class Tickets extends Widget
      * - [[\craft\web\View::namespaceInputName()]] will give you the namespaced version of a given input name.
      * - [[\craft\web\View::formatInputId()]] will format an input name to look more like an ID attribute value.
      *
-     * So here’s what a getSettingsHtml() method that includes field-targeting JavaScript code might look like:
+     * So here's what a getSettingsHtml() method that includes field-targeting JavaScript code might look like:
      *
      * ```php
      * public function getSettingsHtml()
@@ -192,7 +192,7 @@ class Tickets extends Widget
      * </script>
      * ```
      *
-     * The same principles also apply if you’re including your JavaScript code with
+     * The same principles also apply if you're including your JavaScript code with
      * [[\craft\web\View::registerJs()]].
      *
      * @return string|null
@@ -210,8 +210,8 @@ class Tickets extends Widget
     /**
      * Returns the widget's body HTML.
      *
-     * @return string|false The widget’s body HTML, or `false` if the widget
-     *                      should not be visible. (If you don’t want the widget
+     * @return string|false The widget's body HTML, or `false` if the widget
+     *                      should not be visible. (If you don't want the widget
      *                      to be selectable in the first place, use {@link isSelectable()}.)
      */
     public function getBodyHtml()
