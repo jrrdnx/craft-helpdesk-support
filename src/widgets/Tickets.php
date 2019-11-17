@@ -230,7 +230,7 @@ class Tickets extends Widget
 		$user = HelpdeskSupport::$plugin->{$apiService}->getCurrentUser();
 		if(!$user)
 		{
-			return $this->renderTemplate(
+			return Craft::$app->getView()->renderTemplate(
 				'helpdesk-support/_components/widgets/Tickets_body',
 				[
 					'userFound' => false
