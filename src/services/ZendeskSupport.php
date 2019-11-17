@@ -138,15 +138,15 @@ class ZendeskSupport extends Component
 			if($user->id == $ticket->ticket->assignee_id) $ticket->ticket->hsAssignee = $user->name;
 		}
 
-		// Add author info to each comment
+		// Add author info to each comment, normalize
 		foreach($comments->comments as &$comment)
 		{
 			foreach($comments->users as $user)
 			{
 				if($user->id == $comment->author_id)
 				{
-					$comment->author = $user->name;
-					$comment->authorImg = @$user->photo->content_url;
+					$comment->hsAuthor = $user->name;
+					$comment->hsAuthorImg = @$user->photo->content_url;
 				}
 			}
 		}
@@ -159,7 +159,52 @@ class ZendeskSupport extends Component
 		$ticket->hsCreatedAt = $ticket->created_at;
 		$ticket->hsUpdatedAt = $ticket->updated_at;
 
+		// Normalize comments, exclude non-public or non-message
+		$ticket->comments = array();
+		foreach($ticket->threads as $comment)
+		{
+			if($comment->public && $comment->type == "Comment")
+			{
+				$comment->hsCreatedAt = $comment->created_at;
+				$comment->hsUpdatedAt = $comment->updated_at;
+				$comment->hsBody = $comment->html_body;
+				if($comment->attachments)
+				{
+					foreach($comment->attachments as &$attachment)
+					{
+						$attachment->hsFilename = $attachment->file_name;
+						$attachment->hsUrl = $attachment->content_url;
+						$attachment->hsSize = $attachment->size;
+					}
+				}
+				$ticket->comments[] = $comment;
+			}
+		}
+
 		return $ticket;
+	}
+
+	/**
+     * POST an attachment to upload
+     *
+     *     HelpdeskSupport::$plugin->zendeskSupport->uploadAttachment($assetId, $userId)
+     *
+     * @return mixed
+     */
+	public function uploadAttachment(int $assetId, int $userId)
+	{
+		$asset = Craft::$app->assets->getAssetById((int) $assetId);
+		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "uploads", "post", array(
+			'filename' => $asset->getFilename(),
+			'file' => $asset->getTransformSource(),
+			'mimeType' => $asset->getMimeType()
+		));
+		if($response["http_code"] !== 201)
+		{
+			return null;
+		}
+
+		return json_decode($response["data"])->upload->token;
 	}
 
 	/**
@@ -187,29 +232,6 @@ class ZendeskSupport extends Component
 		}
 
 		return json_decode($response["data"])->ticket;
-	}
-
-	/**
-     * POST an attachment to upload
-     *
-     *     HelpdeskSupport::$plugin->zendeskSupport->uploadAttachment($assetId)
-     *
-     * @return mixed
-     */
-	public function uploadAttachment(int $assetId)
-	{
-		$asset = Craft::$app->assets->getAssetById((int) $assetId);
-		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "uploads", "post", array(
-			'filename' => $asset->getFilename(),
-			'file' => $asset->getTransformSource(),
-			'mimeType' => $asset->getMimeType()
-		));
-		if($response["http_code"] !== 201)
-		{
-			return null;
-		}
-
-		return json_decode($response["data"])->upload->token;
 	}
 
 	/**

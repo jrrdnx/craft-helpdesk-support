@@ -174,6 +174,10 @@ class Core extends Component
 				$headers[] = "Content-Type: application/json";
 				curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
 			}
+			else
+			{
+				curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
+			}
 		}
 
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
