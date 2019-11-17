@@ -114,7 +114,8 @@ class TicketsController extends Controller
 				'priorityOptions' => HelpdeskSupport::$plugin->{$apiService}->getPriorityOptions(),
 				'subject' => '',
 				'priority' => '',
-				'description' => ''
+				'description' => '',
+				'assetElements' => ''
 			]
 		);
 	}
@@ -178,12 +179,14 @@ class TicketsController extends Controller
 		}
 
 		$attachmentTokens = array();
+		$assetElements = array();
 		if($attachments)
 		{
 			foreach($attachments as $assetId)
 			{
 				$asset = Craft::$app->assets->getAssetById((int) $assetId);
-				$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId);
+				$assetElements[] = $asset;
+				$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId, $user->id);
 				if(!$attachmentToken)
 				{
 					return $this->renderTemplate(
@@ -193,7 +196,8 @@ class TicketsController extends Controller
 							'priorityOptions' => $priorityOptions,
 							'subject' => $subject,
 							'priority' => $priority,
-							'description' => $description
+							'description' => $description,
+							'assetElements' => $assetElements
 						]
 					);
 				}
@@ -211,11 +215,12 @@ class TicketsController extends Controller
 			return $this->renderTemplate(
 				'helpdesk-support/create-new-ticket',
 				[
-					'ticketErrors' => array("Error creating a new ticket. Please try again."),
+					'ticketErrors' => array("Error creating a new ticket. Please try again. (If the issue persists, please notify your developer.)"),
 					'priorityOptions' => $priorityOptions,
 					'subject' => $subject,
 					'priority' => $priority,
-					'description' => $description
+					'description' => $description,
+					'assetElements' => $assetElements
 				]
 			);
 		}
@@ -265,7 +270,8 @@ class TicketsController extends Controller
 			'helpdesk-support/view-ticket',
 			[
 				'ticket' => $ticket,
-				'reply' => ''
+				'reply' => '',
+				'assetElements' => ''
 			]
 		);
     }
@@ -334,12 +340,14 @@ class TicketsController extends Controller
 		}
 
 		$attachmentTokens = array();
+		$assetElements = array();
 		if($attachments)
 		{
 			foreach($attachments as $assetId)
 			{
 				$asset = Craft::$app->assets->getAssetById((int) $assetId);
-				$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId);
+				$assetElements[] = $asset;
+				$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId, $user->id);
 				if(!$attachmentToken)
 				{
 					return $this->renderTemplate(
@@ -347,6 +355,7 @@ class TicketsController extends Controller
 						[
 							'ticket' => $ticket,
 							'reply' => $reply,
+							'assetElements' => $assetElements,
 							'ticketErrors' => array("Error uploading file: " . $asset->getFilename())
 						]
 					);
@@ -367,7 +376,8 @@ class TicketsController extends Controller
 				[
 					'ticket' => $ticket,
 					'reply' => $reply,
-					'ticketErrors' => array("There was an error saving your reply. Please try again.")
+					'assetElements' => $assetElements,
+					'ticketErrors' => array("There was an error saving your reply. Please try again. (If the issue persists, please notify your developer.)")
 				]
 			);
 		}
