@@ -54,9 +54,9 @@ class ZendeskSupport extends Component
 	/**
 	 * GET all tickets for the given user
 	 *
-	 * 		HelpdeskSupport::$plugin->zendeskSupport->getTicketsForUser($userId)
+	 * 		HelpdeskSupport::$plugin->zendeskSupport->getTicketsForUser($userId, $includeClosed)
 	 */
-	public function getTicketsForUser(int $userId)
+	public function getTicketsForUser(int $userId, $includeClosed = true)
 	{
 		$tickets = array();
 
@@ -65,7 +65,10 @@ class ZendeskSupport extends Component
 		{
 			foreach(json_decode($requested["data"])->tickets as $ticket)
 			{
-				$tickets[$ticket->id] = $ticket;
+				if($includeClosed || (!$includeClosed && $ticket->status !== "solved" && $ticket->status !== "closed"))
+				{
+					$tickets[$ticket->id] = $ticket;
+				}
 			}
 		}
 
@@ -74,7 +77,10 @@ class ZendeskSupport extends Component
 		{
 			foreach(json_decode($ccd["data"])->tickets as $ticket)
 			{
-				$tickets[$ticket->id] = $ticket;
+				if($includeClosed || (!$includeClosed && $ticket->status !== "solved" && $ticket->status !== "closed"))
+				{
+					$tickets[$ticket->id] = $ticket;
+				}
 			}
 		}
 
@@ -83,7 +89,10 @@ class ZendeskSupport extends Component
 		{
 			foreach(json_decode($assigned["data"])->tickets as $ticket)
 			{
-				$tickets[$ticket->id] = $ticket;
+				if($includeClosed || (!$includeClosed && $ticket->status !== "solved" && $ticket->status !== "closed"))
+				{
+					$tickets[$ticket->id] = $ticket;
+				}
 			}
 		}
 

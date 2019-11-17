@@ -239,7 +239,7 @@ class Tickets extends Widget
 		}
 
 		// Get tickets for user
-		$tickets = HelpdeskSupport::$plugin->{$apiService}->getTicketsForUser($user->id);
+		$tickets = HelpdeskSupport::$plugin->{$apiService}->getTicketsForUser($user->id, false);
 
         return Craft::$app->getView()->renderTemplate(
             'helpdesk-support/_components/widgets/Tickets_body',
