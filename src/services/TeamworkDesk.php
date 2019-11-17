@@ -115,7 +115,6 @@ class TeamworkDesk extends Component
 			if($comment->type == "message")
 			{
 				$comment->hsCreatedAt = $comment->createdAt;
-				$comment->hsUpdatedAt = $comment->updatedAt;
 				$comment->hsAuthor = $comment->createdBy->firstName . " " . $comment->createdBy->lastName;
 				$comment->hsAuthorImg = $comment->createdBy->avatarURL;
 				$comment->hsBody = $comment->body;

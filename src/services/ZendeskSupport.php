@@ -161,12 +161,11 @@ class ZendeskSupport extends Component
 
 		// Normalize comments, exclude non-public or non-message
 		$ticket->comments = array();
-		foreach($ticket->threads as $comment)
+		foreach($comments->comments as &$comment)
 		{
 			if($comment->public && $comment->type == "Comment")
 			{
 				$comment->hsCreatedAt = $comment->created_at;
-				$comment->hsUpdatedAt = $comment->updated_at;
 				$comment->hsBody = $comment->html_body;
 				if($comment->attachments)
 				{
