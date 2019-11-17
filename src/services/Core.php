@@ -85,7 +85,7 @@ class Core extends Component
 	}
 
 	/**
-     * Establishes a new cURL session to a specified API endpoint using a GET request
+     * Establishes a new cURL session to a specified url w/ authentication options
      *
      * From any other plugin file, call it like this:
      *
@@ -93,9 +93,9 @@ class Core extends Component
      *
      * @return mixed
      */
-    public function curlInit(string $apiService, string $endpoint, string $method = "get", array $options = array())
+    public function curlInit(string $url, int $authOption, string $authString)
     {
-		if(!$endpoint)
+		if(!$url || !$authOption || !$authString)
 		{
 			return null;
 		}
@@ -103,84 +103,95 @@ class Core extends Component
 		$headers	= array();
 		$curl		= curl_init();
 
-		// determine URL and authenticate
-		if($apiService === "freshdesk")
-		{
-			$requestUrl = "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".freshdesk.com/api/v2/" . $endpoint;
-			curl_setopt($curl, CURLOPT_USERPWD, HelpdeskSupport::$plugin->getSettings()->getApiToken() . ":ABCXYZ"); // Per Freshdesk API: "If you use the API key, there is no need for a password. You can use any set of characters as a dummy password."
-		}
-		else
-		if($apiService === "teamworkDesk")
-		{
-			$requestUrl = "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".teamwork.com/desk/v1/" . $endpoint . ($endpoint == "upload/attachment" ? "" : ".json");
-			curl_setopt($curl, CURLOPT_USERNAME, HelpdeskSupport::$plugin->getSettings()->getApiToken());
-		}
-		else
-		if($apiService === "zendeskSupport")
-		{
-			$requestUrl = "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".zendesk.com/api/v2/" . $endpoint . ".json";
-			curl_setopt($curl, CURLOPT_USERPWD, HelpdeskSupport::$plugin->getSettings()->getApiUsername() . "/token:" . HelpdeskSupport::$plugin->getSettings()->getApiToken());
-		}
-
-		if($method == "get")
-		{
-			$requestUrl .= "?";
-			foreach($options as $option => $value)
-			{
-				$requestUrl .= $option . "=" . $value;
-			}
-		}
-
-		curl_setopt($curl, CURLOPT_URL, $requestUrl);
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, $authOption, $authString);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-		if($apiService == "zendeskSupport" && $endpoint == "tickets" && $method == "post")
-		{
-			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-			$headers[] = "Content-Type: application/json";
-			curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
-		}
-		else
-		if($method == "post")
-		{
-			curl_setopt($curl, CURLOPT_POST, true);
-			if($options)
-			{
-				if($apiService === "teamworkDesk" && isset($options["file"]) && isset($options["uploadType"]) && isset($options["fileName"]))
-				{
-					$curlFile = curl_file_create($options["file"], $options["uploadType"], $options["fileName"]);
-					$options["file"] = $curlFile;
-					curl_setopt($curl, CURLOPT_POSTFIELDS, $options);
-				}
-				else
-				if($apiService === "zendeskSupport" && isset($options["file"]) && isset($options["mimeType"]) && isset($options["filename"]))
-				{
-					$curlFile = curl_file_create($options["file"], $options["mimeType"], $options["filename"]);
-					$options["file"] = $curlFile;
-					curl_setopt($curl, CURLOPT_POSTFIELDS, $options);
-				}
-				else
-				{
-					curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
-				}
-			}
-		}
-		else
-		if($method == "put")
-		{
-			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-			if($apiService === "zendeskSupport" && $options)
-			{
-				$headers[] = "Content-Type: application/json";
-				curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
-			}
-			else
-			{
-				curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
-			}
-		}
+		return $curl;
+	}
 
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+	/**
+	 * Executes a given cURL session
+	 *
+	 * From any other plugin file, call it like this:
+     *
+     *     HelpdeskSupport::$plugin->core->curlInit()
+	 *
+	 * @return mixed
+	 */
+	public function curlExec($curl)
+	{
+
+		// if($method == "get")
+		// {
+		// 	$requestUrl .= "?";
+		// 	foreach($options as $option => $value)
+		// 	{
+		// 		$requestUrl .= $option . "=" . $value;
+		// 	}
+		// }
+
+		// if($apiService == "zendeskSupport" && $endpoint == "tickets" && $method == "post")
+		// {
+		// 	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+		// 	$headers[] = "Content-Type: application/json";
+		// 	curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
+		// }
+		// else
+		// if($method == "post")
+		// {
+		// 	curl_setopt($curl, CURLOPT_POST, true);
+		// 	if($options)
+		// 	{
+		// 		if($apiService === "freshdesk")
+		// 		{
+		// 			if(!in_array("attachments[]", $options))
+		// 			{
+		// 				$headers[] = "Content-Type: multipart/form-data";
+		// 				curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
+		// 			}
+		// 			else
+		// 			{
+		// 				$headers[] = "Content-Type: application/json";
+		// 				curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($options));
+		// 			}
+		// 		}
+		// 		else
+		// 		if($apiService === "teamworkDesk" && isset($options["file"]) && isset($options["uploadType"]) && isset($options["fileName"]))
+		// 		{
+		// 			$curlFile = curl_file_create($options["file"], $options["uploadType"], $options["fileName"]);
+		// 			$options["file"] = $curlFile;
+		// 			curl_setopt($curl, CURLOPT_POSTFIELDS, $options);
+		// 		}
+		// 		else
+		// 		if($apiService === "zendeskSupport" && isset($options["file"]) && isset($options["mimeType"]) && isset($options["filename"]))
+		// 		{
+		// 			$curlFile = curl_file_create($options["file"], $options["mimeType"], $options["filename"]);
+		// 			$options["file"] = $curlFile;
+		// 			curl_setopt($curl, CURLOPT_POSTFIELDS, $options);
+		// 		}
+		// 		else
+		// 		{
+		// 			curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
+		// 		}
+		// 	}
+		// }
+		// else
+		// if($method == "put")
+		// {
+		// 	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+		// 	if($apiService === "zendeskSupport" && $options)
+		// 	{
+		// 		$headers[] = "Content-Type: application/json";
+		// 		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
+		// 	}
+		// 	else
+		// 	{
+		// 		curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
+		// 	}
+		// }
+
+		// curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
 		$response = curl_exec($curl);
 		$responseInfo = curl_getinfo($curl);

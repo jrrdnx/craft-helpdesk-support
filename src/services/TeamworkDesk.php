@@ -34,6 +34,36 @@ class TeamworkDesk extends Component
     // =========================================================================
 
     /**
+	 * Get the url to set as the CURLOPT_URL option
+	 *
+	 * @return string
+	 */
+	public function getUrl(string $endpoint)
+	{
+		return "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".teamwork.com/desk/v1/" . $endpoint . ($endpoint == "upload/attachment" ? "" : ".json");
+	}
+
+	/**
+	 * Get the authentication method (CURLOPT_USERNAME or CURLOPT_USERPWD)
+	 *
+	 * @return integer
+	 */
+	public function getAuthOption()
+	{
+		return CURLOPT_USERNAME;
+	}
+
+	/**
+	 * Get the authentication string
+	 *
+	 * @return string
+	 */
+	public function getAuthString()
+	{
+		return HelpdeskSupport::$plugin->getSettings()->getApiToken();
+	}
+
+	/**
      * GET the user object for the currently logged in user
      *
      *     HelpdeskSupport::$plugin->teamworkDesk->getCurrentUser()
@@ -42,7 +72,7 @@ class TeamworkDesk extends Component
      */
     public function getCurrentUser()
     {
-		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "customers/email", "get", array("email" => Craft::$app->getUser()->getIdentity()->email));
+		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "customers/email", "get", array("email" => "jnix@reusserdesign.com"));//Craft::$app->getUser()->getIdentity()->email
 		if($response["http_code"] !== 200)
 		{
 			return null;
@@ -54,9 +84,9 @@ class TeamworkDesk extends Component
 	/**
 	 * GET all tickets for the given user
 	 *
-	 * 		HelpdeskSupport::$plugin->teamworkDesk->getTicketsForUser($userId)
+	 * 		HelpdeskSupport::$plugin->teamworkDesk->getTicketsForUser($userId, $includeClosed)
 	 */
-	public function getTicketsForUser(int $userId)
+	public function getTicketsForUser(int $userId, $includeClosed = true)
 	{
 		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "customers/" . $userId . "/previoustickets", "get");
 		if($response["http_code"] !== 200)
@@ -65,6 +95,7 @@ class TeamworkDesk extends Component
 		}
 
 		$tickets = json_decode($response["data"])->tickets;
+		$ticketsArray = array();
 
 		// Normalize ticket properties for list view
 		foreach($tickets as &$ticket)
@@ -72,9 +103,14 @@ class TeamworkDesk extends Component
 			$ticket->hsSubject = $ticket->subject ? $ticket->subject : $ticket->description;
 			$ticket->hsCreatedAt = $ticket->createdAt;
 			$ticket->hsUpdatedAt = $ticket->updatedAt;
+
+			if($includeClosed || (!$includeClosed && $ticket->status !== "solved" && $ticket->status !== "closed"))
+			{
+				$ticketsArray[$ticket->id] = $ticket;
+			}
 		}
 
-		return $tickets;
+		return $ticketsArray;
 	}
 
 	/**

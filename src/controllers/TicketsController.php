@@ -152,6 +152,16 @@ class TicketsController extends Controller
 		$description = $request->getRequiredBodyParam('description');
 		$attachments = $request->getBodyParam('attachments');
 
+		$assetElements = array();
+		if($attachments)
+		{
+			foreach($attachments as $assetId)
+			{
+				$asset = Craft::$app->assets->getAssetById((int) $assetId);
+				$assetElements[] = $asset;
+			}
+		}
+
 		$errors = array();
 		if(empty($priority))
 		{
@@ -173,37 +183,43 @@ class TicketsController extends Controller
 					'priorityOptions' => $priorityOptions,
 					'subject' => $subject,
 					'priority' => $priority,
-					'description' => $description
+					'description' => $description,
+					'assetElements' => $assetElements
 				]
 			);
 		}
 
 		$attachmentTokens = array();
-		$assetElements = array();
 		if($attachments)
 		{
 			foreach($attachments as $assetId)
 			{
 				$asset = Craft::$app->assets->getAssetById((int) $assetId);
-				$assetElements[] = $asset;
-				$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId, $user->id);
-				if(!$attachmentToken)
+				if($apiService == "freshdesk")
 				{
-					return $this->renderTemplate(
-						'helpdesk-support/create-new-ticket',
-						[
-							'ticketErrors' => array("Error uploading file: " . $asset->getFilename()),
-							'priorityOptions' => $priorityOptions,
-							'subject' => $subject,
-							'priority' => $priority,
-							'description' => $description,
-							'assetElements' => $assetElements
-						]
-					);
+					$attachmentTokens[] = $asset;
 				}
 				else
 				{
-					$attachmentTokens[] = $attachmentToken;
+					$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId, $user->id);
+					if(!$attachmentToken)
+					{
+						return $this->renderTemplate(
+							'helpdesk-support/create-new-ticket',
+							[
+								'ticketErrors' => array("Error uploading file: " . $asset->getFilename()),
+								'priorityOptions' => $priorityOptions,
+								'subject' => $subject,
+								'priority' => $priority,
+								'description' => $description,
+								'assetElements' => $assetElements
+							]
+						);
+					}
+					else
+					{
+						$attachmentTokens[] = $attachmentToken;
+					}
 				}
 			}
 		}

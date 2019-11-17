@@ -34,6 +34,36 @@ class ZendeskSupport extends Component
     // =========================================================================
 
     /**
+	 * Get the url to set as the CURLOPT_URL option
+	 *
+	 * @return string
+	 */
+	public function getUrl(string $endpoint)
+	{
+		return "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".zendesk.com/api/v2/" . $endpoint . ".json";
+	}
+
+	/**
+	 * Get the authentication method (CURLOPT_USERNAME or CURLOPT_USERPWD)
+	 *
+	 * @return integer
+	 */
+	public function getAuthOption()
+	{
+		return CURLOPT_USERPWD;
+	}
+
+	/**
+	 * Get the authentication string
+	 *
+	 * @return string
+	 */
+	public function getAuthString()
+	{
+		return HelpdeskSupport::$plugin->getSettings()->getApiUsername() . "/token:" . HelpdeskSupport::$plugin->getSettings()->getApiToken();
+	}
+
+	/**
      * GET the user object for the currently logged in user
      *
      *     HelpdeskSupport::$plugin->zendeskSupport->getCurrentUser()
