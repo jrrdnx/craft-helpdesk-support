@@ -397,6 +397,7 @@ class TicketsController extends Controller
 				[
 					'ticket' => $ticket,
 					'reply' => '',
+					'assetElements' => $assetElements,
 					'ticketErrors' => $errors
 				]
 			);
