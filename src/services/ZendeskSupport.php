@@ -40,7 +40,7 @@ class ZendeskSupport extends Component
 	 */
 	public function getUrl(string $endpoint)
 	{
-		return "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".zendesk.com/api/v2/" . $endpoint . ".json";
+		return "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".zendesk.com/api/v2/" . $endpoint;
 	}
 
 	/**
@@ -72,7 +72,8 @@ class ZendeskSupport extends Component
      */
     public function getCurrentUser()
     {
-		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "users/search", "get", array("query" => Craft::$app->getUser()->getIdentity()->email));
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("users/search.json?query=" . Craft::$app->getUser()->getIdentity()->email), $this->getAuthOption(), $this->getAuthString());
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{
 			return null;
@@ -90,7 +91,8 @@ class ZendeskSupport extends Component
 	{
 		$tickets = array();
 
-		$requested = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "users/" . $userId . "/tickets/requested", "get");
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("users/" . $userId . "/tickets/requested.json"), $this->getAuthOption(), $this->getAuthString());
+		$requested = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($requested["http_code"] == 200)
 		{
 			foreach(json_decode($requested["data"])->tickets as $ticket)
@@ -102,7 +104,8 @@ class ZendeskSupport extends Component
 			}
 		}
 
-		$ccd = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "users/" . $userId . "/tickets/ccd", "get");
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("users/" . $userId . "/tickets/ccd.json"), $this->getAuthOption(), $this->getAuthString());
+		$ccd = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($ccd["http_code"] == 200)
 		{
 			foreach(json_decode($ccd["data"])->tickets as $ticket)
@@ -114,7 +117,8 @@ class ZendeskSupport extends Component
 			}
 		}
 
-		$assigned = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "users/" . $userId . "/tickets/assigned", "get");
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("users/" . $userId . "/tickets/assigned.json"), $this->getAuthOption(), $this->getAuthString());
+		$assigned = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($assigned["http_code"] == 200)
 		{
 			foreach(json_decode($assigned["data"])->tickets as $ticket)
@@ -149,7 +153,8 @@ class ZendeskSupport extends Component
 	public function getTicket(int $ticketId, int $userId)
 	{
 		// Get ticket info; sideload user info
-		$ticket = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "tickets/" . $ticketId, "get", array("include" => "users"));
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . ".json?include=users"), $this->getAuthOption(), $this->getAuthString());
+		$ticket = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($ticket["http_code"] !== 200)
 		{
 			return null;
@@ -163,7 +168,8 @@ class ZendeskSupport extends Component
 		}
 
 		// Get ticket comments (why can't this be part of the ticket request, Zendesk?)
-		$comments = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "tickets/" . $ticketId . "/comments", "get", array("include" => "users"));
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . "/comments.json?include=users"), $this->getAuthOption(), $this->getAuthString());
+		$comments = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($comments["http_code"] !== 200)
 		{
 			return null;
@@ -232,11 +238,13 @@ class ZendeskSupport extends Component
 	public function uploadAttachment(int $assetId, int $userId)
 	{
 		$asset = Craft::$app->assets->getAssetById((int) $assetId);
-		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "uploads", "post", array(
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("uploads.json"), $this->getAuthOption(), $this->getAuthString());
+		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
 			'filename' => $asset->getFilename(),
 			'file' => $asset->getTransformSource(),
 			'mimeType' => $asset->getMimeType()
 		));
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 201)
 		{
 			return null;
@@ -254,7 +262,8 @@ class ZendeskSupport extends Component
      */
 	public function createTicket(int $userId, string $description, string $priority, string $subject = '', array $attachmentTokens = array())
 	{
-		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "tickets", "post", array(
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets.json"), $this->getAuthOption(), $this->getAuthString());
+		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
 			'subject' => $subject,
 			'priority' => $priority,
 			'status' => 'new',
@@ -264,6 +273,7 @@ class ZendeskSupport extends Component
 				'uploads' => $attachmentTokens
 			],
 		));
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 201)
 		{
 			return null;
@@ -281,7 +291,9 @@ class ZendeskSupport extends Component
      */
 	public function updateTicket(int $ticketId, string $reply, int $userId, array $attachmentTokens = array())
 	{
-		$response = HelpdeskSupport::$plugin->core->curlInit("zendeskSupport", "tickets/" . $ticketId, "put", array(
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . ".json"), $this->getAuthOption(), $this->getAuthString());
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
 			'comment' => [
 				'body' => $reply,
 				'uploads' => $attachmentTokens,
@@ -289,6 +301,7 @@ class ZendeskSupport extends Component
 			],
 			'status' => 'open'
 		));
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{
 			return null;
