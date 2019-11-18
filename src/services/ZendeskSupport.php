@@ -87,7 +87,7 @@ class ZendeskSupport extends Component
 	/**
 	 * GET all tickets for the given user
 	 *
-	 * 		HelpdeskSupport::$plugin->zendeskSupport->getTicketsForUser($userId, $includeClosed)
+	 * 		HelpdeskSupport::$plugin->zendeskSupport->getTicketsForUser()
 	 */
 	public function getTicketsForUser(int $userId, $includeClosed = true)
 	{
@@ -148,7 +148,7 @@ class ZendeskSupport extends Component
 	/**
      * GET the ticket object for the requested ticket ID
      *
-     *     HelpdeskSupport::$plugin->zendeskSupport->getTicket($ticketId)
+     *     HelpdeskSupport::$plugin->zendeskSupport->getTicket()
      *
      * @return mixed
      */
@@ -233,7 +233,7 @@ class ZendeskSupport extends Component
 	/**
      * POST an attachment to upload
      *
-     *     HelpdeskSupport::$plugin->zendeskSupport->uploadAttachment($assetId, $userId)
+     *     HelpdeskSupport::$plugin->zendeskSupport->uploadAttachment()
      *
      * @return mixed
      */
@@ -288,7 +288,7 @@ class ZendeskSupport extends Component
 	/**
      * PUT a ticket update
      *
-     *     HelpdeskSupport::$plugin->zendeskSupport->updateTicket($ticketId, $reply, $userId, $attachmentTokens)
+     *     HelpdeskSupport::$plugin->zendeskSupport->updateTicket()
      *
      * @return mixed
      */

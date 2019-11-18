@@ -119,7 +119,7 @@ class TeamworkDesk extends Component
 	/**
 	 * GET all tickets for the given user
 	 *
-	 * 		HelpdeskSupport::$plugin->teamworkDesk->getTicketsForUser($userId, $includeClosed)
+	 * 		HelpdeskSupport::$plugin->teamworkDesk->getTicketsForUser()
 	 */
 	public function getTicketsForUser(int $userId, $includeClosed = true)
 	{
@@ -152,7 +152,7 @@ class TeamworkDesk extends Component
 	/**
      * GET the ticket object for the requested ticket ID
      *
-     *     HelpdeskSupport::$plugin->teamworkDesk->getTicket($ticketId)
+     *     HelpdeskSupport::$plugin->teamworkDesk->getTicket()
      *
      * @return mixed
      */
@@ -210,7 +210,7 @@ class TeamworkDesk extends Component
 	/**
      * POST an attachment to upload
      *
-     *     HelpdeskSupport::$plugin->teamworkDesk->uploadAttachment($assetId, $userId)
+     *     HelpdeskSupport::$plugin->teamworkDesk->uploadAttachment()
      *
      * @return mixed
      */
@@ -274,7 +274,7 @@ class TeamworkDesk extends Component
 	/**
      * POST a ticket update
      *
-     *     HelpdeskSupport::$plugin->teamworkDesk->updateTicket($ticketId, $reply, $userId, $attachmentTokens)
+     *     HelpdeskSupport::$plugin->teamworkDesk->updateTicket()
      *
      * @return mixed
      */
