@@ -1,0 +1,50 @@
+{
+    "name": "jrrdnx/helpdesk-support",
+    "description": "Helpdesk support integrations for Craft CMS",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+		"helpdesk",
+		"support",
+		"zendesk",
+		"teamwork",
+		"freshdesk"
+    ],
+    "support": {
+        "docs": "https://github.com/jrrdnx/helpdesk-support/blob/master/README.md",
+        "issues": "https://github.com/jrrdnx/helpdesk-support/issues"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Jarrod D Nix",
+            "homepage": "https://jarrodnix.me"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "jrrdnx\\helpdesksupport\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Helpdesk Support",
+        "handle": "helpdesk-support",
+        "hasCpSettings": true,
+        "hasCpSection": true,
+        "changelogUrl": "https://raw.githubusercontent.com/jrrdnx/helpdesk-support/master/CHANGELOG.md",
+        "components": {
+            "zendeskSupport": "jrrdnx\\helpdesksupport\\services\\ZendeskSupport",
+            "teamworkDesk": "jrrdnx\\helpdesksupport\\services\\TeamworkDesk",
+            "freshdesk": "jrrdnx\\helpdesksupport\\services\\Freshdesk",
+            "core": "jrrdnx\\helpdesksupport\\services\\Core"
+        },
+        "class": "jrrdnx\\helpdesksupport\\HelpdeskSupport"
+    }
+}

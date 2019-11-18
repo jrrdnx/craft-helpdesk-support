@@ -1,0 +1,127 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Helpdesk Support plugin for Craft CMS 3.x
+ *
+ * Helpdesk Support index.twig
+ *
+ * @author    Jarrod D Nix
+ * @copyright Copyright (c) 2019 Jarrod D Nix
+ * @link      https://jarrodnix.me
+ * @package   HelpdeskSupport
+ * @since     0.1.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+{% set fullPageForm = true %}
+
+{% do view.registerAssetBundle("jrrdnx\\helpdesksupport\\assetbundles\\helpdesksupport\\HelpdeskSupportAsset") %}
+{% do view.registerAssetBundle("jrrdnx\\helpdesksupport\\assetbundles\\createnewticketcpsection\\CreateNewTicketCPSectionAsset") %}
+
+{# Link for the ? icon at the bottom of the page #}
+{% set docsUrl = "https://github.com/jrrdnx/helpdesk-support/blob/master/README.md" %}
+
+{# The title of this CP section #}
+{% set title = "Create New Ticket" %}
+
+{# The URL to this plugin's base CP section #}
+{% set pluginCpUrl = url('helpdesk-support') %}
+
+{# Get a URL to an image in our AssetBundle #}
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@jrrdnx/helpdesksupport/assetbundles/createnewticketcpsection/dist', true) ~ '/img/CreateNewTicket-icon.svg' %}
+
+{% set subnav = {
+    "create-new-ticket": { label: "Create New Ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
+    "view-tickets": { label: "View Tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
+
+} %}
+{% set selectedSubnavItem = 'create-new-ticket' %}
+
+{% set crumbs = [
+    { label: "Helpdesk Support", url: url(pluginCpUrl) },
+] %}
+
+{# Content that should appear in the page header#}
+{% set extraPageHeaderHtml %}
+    <div class="buttons">
+        <a href="{{ pluginCpUrl }}" class="btn submit add icon">{{ "Click Me!"|t('helpdesk-support') }}</a>
+    </div>
+{% endset %}
+
+{# The content of the CP Section#}
+{% block actionButton %}{% endblock %}
+
+{% set content %}
+
+	<input type="hidden" name="action" value="helpdesk-support/tickets/save-new-ticket">
+
+	{% if ticketErrors is defined %}
+		<div class="ticket-errors">
+			<ul>
+				{% for error in ticketErrors %}
+					<li>{{ error }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+
+	{{ forms.textField({
+		label: 'Subject',
+		instructions: 'Provide a brief description of your request.',
+		id: 'subject',
+		name: 'subject',
+		value: subject,
+		required: true})
+	}}
+
+	{% if inboxOptions %}
+		{{ forms.selectField({
+			label: 'Inbox',
+			instructions: '',
+			id: 'inbox',
+			name: 'inbox',
+			options: inboxOptions,
+			value: inbox,
+			required: true})
+		}}
+	{% endif %}
+
+	{{ forms.selectField({
+		label: 'Priority',
+		instructions: 'The urgency with which the ticket should be addressed.',
+		id: 'priority',
+		name: 'priority',
+		options: priorityOptions,
+		value: priority,
+		required: true})
+	}}
+
+	{{ forms.textareaField({
+		rows: 8,
+		label: 'Description',
+		instructions: 'Please enter the details of your request. Make sure to include specific website urls (e.g. ' ~ craft.app.request.getHostInfo() ~ '/broken-page) if applicable. A member of our support staff will respond as soon as possible.',
+		id: 'description',
+		name: 'description',
+		value: description,
+		required: true})
+	}}
+
+	{% if showAttachments %}
+		{{ forms.elementSelectField({
+			label: 'Attachments',
+			instructions: '',
+			id: 'attachments',
+			name: 'attachments',
+			limit: 10,
+			elementType: 'craft\\elements\\Asset',
+			elements: assetElements})
+		}}
+	{% endif %}
+
+	<div class="btngroup submit first">
+		<input type="submit" class="btn submit" value="Create Ticket">
+	</div>
+
+{% endset %}

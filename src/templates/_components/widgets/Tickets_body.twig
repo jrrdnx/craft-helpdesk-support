@@ -1,0 +1,75 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Helpdesk Support plugin for Craft CMS
+ *
+ * Tickets Widget Body
+ *
+ * @author    Jarrod D Nix
+ * @copyright Copyright (c) 2019 Jarrod D Nix
+ * @link      https://jarrodnix.me
+ * @package   HelpdeskSupport
+ * @since     0.1.0
+ */
+#}
+
+{# The URL to this plugin's base CP section #}
+{% set pluginCpUrl = url('helpdesk-support') %}
+
+{% macro activeTicketRow(ticket, pluginCpUrl) %}
+	<tr>
+		<td>
+			<a href="{{ url(pluginCpUrl ~ '/view-ticket/' ~ ticket.id) }}">
+				{% if ticket.hsSubject|length > 50 %}
+					{{ ticket.hsSubject|slice(0, 50)|trim }}...
+				{% else %}
+					{{ ticket.hsSubject }}
+				{% endif %}
+			</a>
+		</td>
+		<td>{{ ticket.id }}</td>
+		<td>{{ ticket.hsCreatedAt|date('M d') }}</td>
+		<td>{{ ticket.hsUpdatedAt|date('M d') }}</td>
+		<td class="ticket-status-cell">
+			<span class="helpdesk-support-ticket-status {{ ticket.status }}">{{ ticket.status }}</span>
+		</td>
+	</tr>
+{% endmacro %}
+
+{% if userFound == false %}
+
+	<p class="no-user-found">Please contact your Project Manager/Developer to set up a helpdesk account.</p>
+
+{% else %}
+
+	<table class="ticket-list">
+		<thead>
+			<tr>
+				<th>Subject</th>
+				<th>ID</th>
+				<th>Created</th>
+				<th>Last Activity</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% if tickets|length > 0 %}
+				{% for ticket in tickets %}
+					{{ _self.activeTicketRow(ticket, pluginCpUrl) }}
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td colspan="5">
+						<p class="no-tickets-found">No active tickets found.&nbsp;<a href="{{ url(pluginCpUrl ~ '/create-new-ticket') }}">Create a new ticket</a></p>
+					</td>
+				</tr>
+			{% endif %}
+		</tbody>
+	</table>
+
+	<div class="btngroup right">
+		<a href="{{ url(pluginCpUrl ~ '/create-new-ticket') }}" class="btn submit">Create New Ticket</a>
+		<a href="{{ url(pluginCpUrl ~ '/view-tickets') }}" class="btn submit">View All Tickets</a>
+	</div>
+
+{% endif %}

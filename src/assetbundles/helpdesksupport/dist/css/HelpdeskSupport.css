@@ -1,0 +1,268 @@
+/**
+ * Helpdesk Support plugin for Craft CMS
+ *
+ * Helpdesk Support CSS
+ *
+ * @author    Jarrod D Nix
+ * @copyright Copyright (c) 2019 Jarrod D Nix
+ * @link      https://jarrodnix.me
+ * @package   HelpdeskSupport
+ * @since     0.1.0
+ */
+
+.invalid-settings,
+.no-user-found,
+.no-tickets-found {
+	padding: 120px 0;
+	text-align: center;
+}
+
+/**
+ *	Ticket List
+ */
+.ticket-list {
+	width: 100%;
+}
+
+.ticket-list thead tr th {
+	padding: 10px 4px;
+	color: rgb(47, 57, 65);
+	font-weight: 600;
+	font-size: 14px;
+	background-color: rgb(248, 249, 249);
+	border-bottom: 1px solid rgb(216, 220, 222);
+}
+
+.ticket-list tbody tr td {
+	padding: 10px 4px;
+	line-height: 17px;
+	border-bottom: 1px solid rgb(233, 235, 237);
+}
+
+.ticket-list tbody tr td.ticket-status-cell {
+	width: 1px;
+}
+
+.helpdesk-support-ticket-status {
+	display: inline-block !important;
+	height: 15px;
+	padding: 0 4px;
+	color: white;
+	font-size: 9px;
+	line-height: 15px;
+	text-align: center;
+	text-transform: uppercase;
+	white-space: nowrap;
+	border-radius: 3px;
+}
+
+.helpdesk-support-ticket-status.new,
+.helpdesk-support-ticket-status.open,
+.helpdesk-support-ticket-status.active {
+	background-color: rgb(227, 79, 50);
+}
+.helpdesk-support-ticket-status.pending,
+.helpdesk-support-ticket-status.waiting {
+	background-color: rgb(0, 150, 0);
+}
+.helpdesk-support-ticket-status.hold,
+.helpdesk-support-ticket-status.on-hold {
+	background-color: rgb(47, 57, 65);
+}
+.helpdesk-support-ticket-status.resolved,
+.helpdesk-support-ticket-status.closed,
+.helpdesk-support-ticket-status.solved,
+.helpdesk-support-ticket-status.spam {
+	background-color: rgb(135, 146, 157);
+}
+
+.ticket-list + .btngroup {
+	margin-top: 24px;
+}
+
+.ticket-list + .btngroup .btn:not(:last-of-type) {
+	margin-right: 7px !important;
+}
+
+/**
+ *	Ticket Errors
+ */
+.ticket-errors {
+	color: #d55845;
+	background-color: rgba(213, 88, 69, .1);
+	border: 1px solid #d55845;
+	border-radius: 2px;
+}
+
+.ticket-errors ul {
+	list-style: initial;
+	margin: 16px 0;
+	padding-left: 40px;
+}
+
+/**
+ *	Ticket Details
+ */
+.ticket-details-sidebar > div {
+	margin-bottom: 16px;
+}
+
+.ticket-details-sidebar > div span {
+	display: block;
+}
+
+.ticket-details-sidebar > div > span:nth-of-type(1) {
+	font-size: 12px;
+	line-height: 1;
+}
+
+.ticket-details-sidebar > div > span:nth-of-type(2) {
+	font-weight: 700;
+}
+
+.ticket-details-sidebar .separator {
+	border-bottom: 1px solid #eaeaea;
+}
+
+.ticket-details-sidebar .ticket-attachments {
+	margin-top: 8px;
+}
+
+.ticket-details-sidebar .ticket-attachments a {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+	padding: 4px 8px;
+	color: #d55845;
+	text-decoration: none;
+	background-color: #e8e8e8;
+	border-radius: 2px;
+}
+
+.ticket-details-sidebar .ticket-attachments a:hover,
+.ticket-details-sidebar .ticket-attachments a:focus {
+	color: white;
+	background-color: #d55845;
+}
+
+.ticket-details-sidebar .ticket-attachments a svg {
+	min-width: 16px;
+	max-width: 16px;
+	height: 18px;
+	margin-right: 8px;
+}
+
+.ticket-details-sidebar .ticket-attachments a svg path {
+	fill: currentColor;
+}
+
+.ticket-details-sidebar .ticket-attachments a div span {
+	display: block;
+}
+
+.ticket-details-sidebar .ticket-attachments a div span:first-of-type {
+	font-weight: 700;
+	line-height: 1.2;
+	word-break: break-word;
+}
+
+.ticket-details-sidebar .ticket-attachments a div span:last-of-type {
+	font-size: 11px;
+}
+
+.ticket-details-sidebar > div span.no-attachments {
+	margin-top: -8px;
+	font-weight: 700;
+}
+
+/**
+ *		TICKET COMMENTS
+ */
+.ticket-comments {
+	margin-bottom: 32px;
+}
+
+.ticket-comments .ticket-comment {
+	padding: 28px 0;
+	border-bottom: 1px solid #ebebeb;
+}
+
+.ticket-comments .ticket-comment header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 24px;
+	font-size: 12px;
+}
+
+.ticket-comments .ticket-comment header .img {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	margin-right: 16px;
+	background-color: #ddd;
+	border-radius: 50%;
+}
+
+.ticket-comments .ticket-comment header .img img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	max-width: 100%;
+	max-height: 100%;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.ticket-comments .ticket-comment header .img svg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 40%;
+	transform: translate(-50%, -50%);
+}
+
+.ticket-comments .ticket-comment header .img svg path {
+	fill: white;
+}
+
+.ticket-comments .ticket-comment header .img + div span {
+	display: block;
+}
+
+.ticket-comments .ticket-comment header .img + div span:first-of-type {
+	font-weight: 700;
+}
+
+.ticket-comments .ticket-comment .attachments {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 24px;
+}
+
+.ticket-comments .ticket-comment .attachments a {
+	display: flex;
+	align-items: center;
+	margin-right: 8px;
+	margin-bottom: 4px;
+	padding: 4px 8px;
+	color: #d55845;
+	text-decoration: none;
+	background-color: #e8e8e8;
+	border-radius: 2px;
+}
+
+.ticket-comments .ticket-comment .attachments a:hover,
+.ticket-comments .ticket-comment .attachments a:focus {
+	color: white;
+	background-color: #d55845;
+}
+
+.ticket-comments .ticket-comment .attachments a svg {
+	width: 9px;
+	height: 12px;
+	margin-right: 8px;
+}
+
+.ticket-comments .ticket-comment .attachments a svg path {
+	fill: currentColor;
+}
