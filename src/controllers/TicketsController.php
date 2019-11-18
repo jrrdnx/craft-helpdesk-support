@@ -159,11 +159,11 @@ class TicketsController extends Controller
 			$this->redirect('/admin/helpdesk-support/view-tickets');
 		}
 
-		$subject = $request->getBodyParam('subject');
+		$subject = $request->getRequiredBodyParam('subject');
 		$priority = $request->getRequiredBodyParam('priority');
 		$description = $request->getRequiredBodyParam('description');
 		$attachments = $request->getBodyParam('attachments');
-		$inbox = $request->getRequiredBodyParam('inbox');
+		$inbox = $request->getBodyParam('inbox');
 		$showAttachments = HelpdeskSupport::$plugin->{$apiService}->allowAttachmentsOnCreate;
 
 		$assetElements = array();
