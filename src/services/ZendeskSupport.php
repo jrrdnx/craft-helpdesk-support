@@ -30,6 +30,8 @@ use craft\base\Component;
  */
 class ZendeskSupport extends Component
 {
+	public $allowAttachmentsOnCreate = true;
+
     // Public Methods
     // =========================================================================
 

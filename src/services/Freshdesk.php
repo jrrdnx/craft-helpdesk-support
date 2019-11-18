@@ -30,6 +30,8 @@ use craft\base\Component;
  */
 class Freshdesk extends Component
 {
+	public $allowAttachmentsOnCreate = true;
+
 	public $statuses = array(
 		2 => 'open',
 		3 => 'pending',

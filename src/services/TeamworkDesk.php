@@ -30,6 +30,8 @@ use craft\base\Component;
  */
 class TeamworkDesk extends Component
 {
+	public $allowAttachmentsOnCreate = false;
+
     // Public Methods
     // =========================================================================
 

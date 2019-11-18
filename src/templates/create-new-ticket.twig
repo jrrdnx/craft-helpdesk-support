@@ -108,14 +108,17 @@
 		required: true})
 	}}
 
-	{{ forms.elementSelectField({
-		label: 'Attachments',
-		instructions: '',
-		id: 'attachments',
-		name: 'attachments',
-		limit: 10,
-		elementType: 'craft\\elements\\Asset'})
-	}}
+	{% if showAttachments %}
+		{{ forms.elementSelectField({
+			label: 'Attachments',
+			instructions: '',
+			id: 'attachments',
+			name: 'attachments',
+			limit: 10,
+			elementType: 'craft\\elements\\Asset',
+			elements: assetElements})
+		}}
+	{% endif %}
 
 	<div class="btngroup submit first">
 		<input type="submit" class="btn submit" value="Create Ticket">

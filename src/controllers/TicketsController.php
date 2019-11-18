@@ -115,6 +115,8 @@ class TicketsController extends Controller
 			$inboxOptions = HelpdeskSupport::$plugin->{$apiService}->getInboxOptions();
 		}
 
+		$showAttachments = HelpdeskSupport::$plugin->{$apiService}->allowAttachmentsOnCreate;
+
 		return $this->renderTemplate(
 			'helpdesk-support/create-new-ticket',
 			[
@@ -124,7 +126,8 @@ class TicketsController extends Controller
 				'description' => '',
 				'assetElements' => '',
 				'inboxOptions' => $inboxOptions,
-				'inbox' => ''
+				'inbox' => '',
+				'showAttachments' => $showAttachments
 			]
 		);
 	}
@@ -161,6 +164,7 @@ class TicketsController extends Controller
 		$description = $request->getRequiredBodyParam('description');
 		$attachments = $request->getBodyParam('attachments');
 		$inbox = $request->getRequiredBodyParam('inbox');
+		$showAttachments = HelpdeskSupport::$plugin->{$apiService}->allowAttachmentsOnCreate;
 
 		$assetElements = array();
 		if($attachments)
@@ -203,7 +207,8 @@ class TicketsController extends Controller
 					'description' => $description,
 					'assetElements' => $assetElements,
 					'inboxOptions' => $inboxOptions,
-					'inbox' => $inbox
+					'inbox' => $inbox,
+					'showAttachments' => $showAttachments
 				]
 			);
 		}
@@ -233,7 +238,8 @@ class TicketsController extends Controller
 								'description' => $description,
 								'assetElements' => $assetElements,
 								'inboxOptions' => $inboxOptions,
-								'inbox' => $inbox
+								'inbox' => $inbox,
+								'showAttachments' => $showAttachments
 							]
 						);
 					}
@@ -266,7 +272,8 @@ class TicketsController extends Controller
 					'description' => $description,
 					'assetElements' => $assetElements,
 					'inboxOptions' => $inboxOptions,
-					'inbox' => $inbox
+					'inbox' => $inbox,
+					'showAttachments' => $showAttachments
 				]
 			);
 		}
