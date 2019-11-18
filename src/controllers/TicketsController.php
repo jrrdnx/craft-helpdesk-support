@@ -224,7 +224,7 @@ class TicketsController extends Controller
 			}
 		}
 
-		// Update ticket
+		// Create ticket
 		$newTicket = HelpdeskSupport::$plugin->{$apiService}->createTicket($user->id, $description, $priority, $subject, $attachmentTokens);
 		if(!$newTicket)
 		{
@@ -337,6 +337,16 @@ class TicketsController extends Controller
 		$reply = $request->getRequiredBodyParam('reply');
 		$attachments = $request->getBodyParam('attachments');
 
+		$assetElements = array();
+		if($attachments)
+		{
+			foreach($attachments as $assetId)
+			{
+				$asset = Craft::$app->assets->getAssetById((int) $assetId);
+				$assetElements[] = $asset;
+			}
+		}
+
 		$errors = array();
 		if(empty($reply))
 		{
@@ -356,29 +366,34 @@ class TicketsController extends Controller
 		}
 
 		$attachmentTokens = array();
-		$assetElements = array();
 		if($attachments)
 		{
 			foreach($attachments as $assetId)
 			{
 				$asset = Craft::$app->assets->getAssetById((int) $assetId);
-				$assetElements[] = $asset;
-				$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId, $user->id);
-				if(!$attachmentToken)
+				if($apiService == "freshdesk")
 				{
-					return $this->renderTemplate(
-						'helpdesk-support/view-ticket',
-						[
-							'ticket' => $ticket,
-							'reply' => $reply,
-							'assetElements' => $assetElements,
-							'ticketErrors' => array("Error uploading file: " . $asset->getFilename())
-						]
-					);
+					$attachmentTokens[] = $asset;
 				}
 				else
 				{
-					$attachmentTokens[] = $attachmentToken;
+					$attachmentToken = HelpdeskSupport::$plugin->{$apiService}->uploadAttachment($assetId, $user->id);
+					if(!$attachmentToken)
+					{
+						return $this->renderTemplate(
+							'helpdesk-support/view-ticket',
+							[
+								'ticket' => $ticket,
+								'reply' => $reply,
+								'assetElements' => $assetElements,
+								'ticketErrors' => array("Error uploading file: " . $asset->getFilename())
+							]
+						);
+					}
+					else
+					{
+						$attachmentTokens[] = $attachmentToken;
+					}
 				}
 			}
 		}
