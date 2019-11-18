@@ -72,7 +72,7 @@ class TeamworkDesk extends Component
      */
     public function getCurrentUser()
     {
-		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "customers/email", "get", array("email" => "jnix@reusserdesign.com"));//Craft::$app->getUser()->getIdentity()->email
+		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "customers/email", "get", array("email" => Craft::$app->getUser()->getIdentity()->email));
 		if($response["http_code"] !== 200)
 		{
 			return null;

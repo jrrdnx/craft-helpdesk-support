@@ -74,7 +74,8 @@ class Freshdesk extends Component
 	 */
 	public function getAuthString()
 	{
-		return HelpdeskSupport::$plugin->getSettings()->getApiToken() . ":ABCXYZ"; // Per Freshdesk API: "If you use the API key, there is no need for a password. You can use any set of characters as a dummy password."
+		// Per Freshdesk API: "If you use the API key, there is no need for a password. You can use any set of characters as a dummy password."
+		return HelpdeskSupport::$plugin->getSettings()->getApiToken() . ":CRAFTHELPDESKSUPPORT";
 	}
 
     /**
@@ -86,7 +87,7 @@ class Freshdesk extends Component
      */
     public function getCurrentUser()
     {
-		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("contacts?email=jnix@reusserdesign.com"), $this->getAuthOption(), $this->getAuthString());//Craft::$app->getUser()->getIdentity()->email
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("contacts?email=" . Craft::$app->getUser()->getIdentity()->email), $this->getAuthOption(), $this->getAuthString());
 		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{
