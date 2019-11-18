@@ -218,8 +218,9 @@ class TeamworkDesk extends Component
 	{
 		$asset = Craft::$app->assets->getAssetById((int) $assetId);
 		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("upload/attachment"), $this->getAuthOption(), $this->getAuthString());
+		$curlFile = curl_file_create($asset->getTransformSource(), $asset->getMimeType(), $asset->getFilename());
 		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
-			'file' => $asset->getTransformSource(),
+			'file' => $curlFile,
 			'fileName' => $asset->getFilename(),
 			'userId' => $userId,
 			'uploadType' => $asset->getMimeType()
@@ -262,8 +263,6 @@ class TeamworkDesk extends Component
 			// 'taskId' => ''
 		));
 		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
-		// var_dump($response);
-		// exit;
 		if($response["http_code"] !== 200)
 		{
 			return null;
@@ -282,12 +281,12 @@ class TeamworkDesk extends Component
 	public function updateTicket(int $ticketId, string $reply, int $userId, array $attachmentTokens = array())
 	{
 		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . ".json"), $this->getAuthOption(), $this->getAuthString());
-		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
+		curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query(array(
 			'body' => $reply,
 			'customerId' => $userId,
 			'status' => 'active',
 			'attachmentIds' => $attachmentTokens
-		));
+		))));
 		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{

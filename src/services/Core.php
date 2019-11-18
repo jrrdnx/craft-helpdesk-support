@@ -115,84 +115,12 @@ class Core extends Component
 	 *
 	 * From any other plugin file, call it like this:
      *
-     *     HelpdeskSupport::$plugin->core->curlInit()
+     *     HelpdeskSupport::$plugin->core->curlExec()
 	 *
 	 * @return mixed
 	 */
 	public function curlExec($curl)
 	{
-
-		// if($method == "get")
-		// {
-		// 	$requestUrl .= "?";
-		// 	foreach($options as $option => $value)
-		// 	{
-		// 		$requestUrl .= $option . "=" . $value;
-		// 	}
-		// }
-
-		// if($apiService == "zendeskSupport" && $endpoint == "tickets" && $method == "post")
-		// {
-		// 	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-		// 	$headers[] = "Content-Type: application/json";
-		// 	curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
-		// }
-		// else
-		// if($method == "post")
-		// {
-		// 	curl_setopt($curl, CURLOPT_POST, true);
-		// 	if($options)
-		// 	{
-		// 		if($apiService === "freshdesk")
-		// 		{
-		// 			if(!in_array("attachments[]", $options))
-		// 			{
-		// 				$headers[] = "Content-Type: multipart/form-data";
-		// 				curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
-		// 			}
-		// 			else
-		// 			{
-		// 				$headers[] = "Content-Type: application/json";
-		// 				curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($options));
-		// 			}
-		// 		}
-		// 		else
-		// 		if($apiService === "teamworkDesk" && isset($options["file"]) && isset($options["uploadType"]) && isset($options["fileName"]))
-		// 		{
-		// 			$curlFile = curl_file_create($options["file"], $options["uploadType"], $options["fileName"]);
-		// 			$options["file"] = $curlFile;
-		// 			curl_setopt($curl, CURLOPT_POSTFIELDS, $options);
-		// 		}
-		// 		else
-		// 		if($apiService === "zendeskSupport" && isset($options["file"]) && isset($options["mimeType"]) && isset($options["filename"]))
-		// 		{
-		// 			$curlFile = curl_file_create($options["file"], $options["mimeType"], $options["filename"]);
-		// 			$options["file"] = $curlFile;
-		// 			curl_setopt($curl, CURLOPT_POSTFIELDS, $options);
-		// 		}
-		// 		else
-		// 		{
-		// 			curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
-		// 		}
-		// 	}
-		// }
-		// else
-		// if($method == "put")
-		// {
-		// 	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-		// 	if($apiService === "zendeskSupport" && $options)
-		// 	{
-		// 		$headers[] = "Content-Type: application/json";
-		// 		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => $options)));
-		// 	}
-		// 	else
-		// 	{
-		// 		curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($options)));
-		// 	}
-		// }
-
-		// curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-
 		$response = curl_exec($curl);
 		$responseInfo = curl_getinfo($curl);
 

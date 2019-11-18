@@ -265,7 +265,8 @@ class ZendeskSupport extends Component
 	public function createTicket(int $userId, string $description, string $priority, string $subject = '', array $attachmentTokens = array())
 	{
 		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets.json"), $this->getAuthOption(), $this->getAuthString());
-		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => array(
 			'subject' => $subject,
 			'priority' => $priority,
 			'status' => 'new',
@@ -274,7 +275,7 @@ class ZendeskSupport extends Component
 				'body' => $description,
 				'uploads' => $attachmentTokens
 			],
-		));
+		))));
 		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 201)
 		{
@@ -295,14 +296,15 @@ class ZendeskSupport extends Component
 	{
 		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . ".json"), $this->getAuthOption(), $this->getAuthString());
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array("ticket" => array(
 			'comment' => [
 				'body' => $reply,
 				'uploads' => $attachmentTokens,
 				'author_id' => $userId
 			],
 			'status' => 'open'
-		));
+		))));
 		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{

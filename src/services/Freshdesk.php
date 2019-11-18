@@ -363,7 +363,6 @@ class Freshdesk extends Component
 			return null;
 		}
 
-		var_dump($response);
 		return json_decode($response["data"]);
 	}
 
