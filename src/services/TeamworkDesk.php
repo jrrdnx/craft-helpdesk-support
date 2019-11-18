@@ -40,7 +40,7 @@ class TeamworkDesk extends Component
 	 */
 	public function getUrl(string $endpoint)
 	{
-		return "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".teamwork.com/desk/v1/" . $endpoint . ($endpoint == "upload/attachment" ? "" : ".json");
+		return "https://" . HelpdeskSupport::$plugin->getSettings()->getApiDomain() . ".teamwork.com/desk/v1/" . $endpoint;
 	}
 
 	/**
@@ -64,6 +64,38 @@ class TeamworkDesk extends Component
 	}
 
 	/**
+	 * Get a list of current Inboxes
+	 *
+	 * @return string
+	 */
+	public function getInboxOptions()
+	{
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("inboxes.json"), $this->getAuthOption(), $this->getAuthString());
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
+		if($response["http_code"] !== 200)
+		{
+			return null;
+		}
+
+		$return = array(
+			array(
+				'label' => 'Select an Inbox...',
+				'value' => null,
+			)
+		);
+
+		foreach(json_decode($response["data"])->inboxes as $inbox)
+		{
+			$return[] = array(
+				'label' => $inbox->name,
+				'value' => $inbox->id
+			);
+		}
+
+		return $return;
+	}
+
+	/**
      * GET the user object for the currently logged in user
      *
      *     HelpdeskSupport::$plugin->teamworkDesk->getCurrentUser()
@@ -72,7 +104,8 @@ class TeamworkDesk extends Component
      */
     public function getCurrentUser()
     {
-		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "customers/email", "get", array("email" => Craft::$app->getUser()->getIdentity()->email));
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("customers/email.json?email=" . Craft::$app->getUser()->getIdentity()->email), $this->getAuthOption(), $this->getAuthString());
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{
 			return null;
@@ -88,7 +121,8 @@ class TeamworkDesk extends Component
 	 */
 	public function getTicketsForUser(int $userId, $includeClosed = true)
 	{
-		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "customers/" . $userId . "/previoustickets", "get");
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("customers/" . $userId . "/previoustickets.json"), $this->getAuthOption(), $this->getAuthString());
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{
 			return null;
@@ -123,7 +157,8 @@ class TeamworkDesk extends Component
 	public function getTicket(int $ticketId, int $userId)
 	{
 		// Get ticket info
-		$ticket = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "tickets/" . $ticketId, "get");
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . ".json"), $this->getAuthOption(), $this->getAuthString());
+		$ticket = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($ticket["http_code"] !== 200)
 		{
 			return null;
@@ -180,12 +215,14 @@ class TeamworkDesk extends Component
 	public function uploadAttachment(int $assetId, int $userId)
 	{
 		$asset = Craft::$app->assets->getAssetById((int) $assetId);
-		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "upload/attachment", "post", array(
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("upload/attachment"), $this->getAuthOption(), $this->getAuthString());
+		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
 			'file' => $asset->getTransformSource(),
 			'fileName' => $asset->getFilename(),
 			'userId' => $userId,
 			'uploadType' => $asset->getMimeType()
 		));
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{
 			return null;
@@ -201,15 +238,16 @@ class TeamworkDesk extends Component
      *
      * @return mixed
      */
-	public function createTicket(int $userId, string $description, string $priority, string $subject = '', array $attachmentTokens = array())
+	public function createTicket(int $userId, string $description, string $priority, int $inboxId, string $subject = '', array $attachmentTokens = array())
 	{
-		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "tickets", "post", array(
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets.json"), $this->getAuthOption(), $this->getAuthString());
+		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
 			// 'assignedTo' => '',
 			// 'customerEmail' => $user->email,
 			// 'customerFirstName' => $user->firstName,
 			// 'customerLastName' => $user->lastName,
 			'customerId' => $userId,
-			// 'inboxId' => '',
+			'inboxId' => $inboxId,
 			'message' => $description,
 			// 'previewTest' => '',
 			'priority' => $priority,
@@ -221,13 +259,15 @@ class TeamworkDesk extends Component
 			// 'oldThreadId' => '',
 			// 'taskId' => ''
 		));
-		var_dump($response);
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
+		// var_dump($response);
+		// exit;
 		if($response["http_code"] !== 200)
 		{
 			return null;
 		}
 
-		return json_decode($response["data"])->ticket;
+		return json_decode($response["data"]);
 	}
 
 	/**
@@ -239,12 +279,14 @@ class TeamworkDesk extends Component
      */
 	public function updateTicket(int $ticketId, string $reply, int $userId, array $attachmentTokens = array())
 	{
-		$response = HelpdeskSupport::$plugin->core->curlInit("teamworkDesk", "tickets/" . $ticketId, "post", array(
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . ".json"), $this->getAuthOption(), $this->getAuthString());
+		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
 			'body' => $reply,
 			'customerId' => $userId,
 			'status' => 'active',
 			'attachmentIds' => $attachmentTokens
 		));
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{
 			return null;

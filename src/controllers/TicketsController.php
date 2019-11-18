@@ -108,6 +108,13 @@ class TicketsController extends Controller
 			);
 		}
 
+		// Inbox is a required field for Teamwork Desk
+		$inboxOptions = null;
+		if($apiService == "teamworkDesk")
+		{
+			$inboxOptions = HelpdeskSupport::$plugin->{$apiService}->getInboxOptions();
+		}
+
 		return $this->renderTemplate(
 			'helpdesk-support/create-new-ticket',
 			[
@@ -115,7 +122,9 @@ class TicketsController extends Controller
 				'subject' => '',
 				'priority' => '',
 				'description' => '',
-				'assetElements' => ''
+				'assetElements' => '',
+				'inboxOptions' => $inboxOptions,
+				'inbox' => ''
 			]
 		);
 	}
@@ -151,6 +160,7 @@ class TicketsController extends Controller
 		$priority = $request->getRequiredBodyParam('priority');
 		$description = $request->getRequiredBodyParam('description');
 		$attachments = $request->getBodyParam('attachments');
+		$inbox = $request->getRequiredBodyParam('inbox');
 
 		$assetElements = array();
 		if($attachments)
@@ -174,6 +184,13 @@ class TicketsController extends Controller
 
 		$priorityOptions = HelpdeskSupport::$plugin->{$apiService}->getPriorityOptions();
 
+		// Inbox is a required field for Teamwork Desk
+		$inboxOptions = null;
+		if($apiService == "teamworkDesk")
+		{
+			$inboxOptions = HelpdeskSupport::$plugin->{$apiService}->getInboxOptions();
+		}
+
 		if(!empty($errors))
 		{
 			return $this->renderTemplate(
@@ -184,7 +201,9 @@ class TicketsController extends Controller
 					'subject' => $subject,
 					'priority' => $priority,
 					'description' => $description,
-					'assetElements' => $assetElements
+					'assetElements' => $assetElements,
+					'inboxOptions' => $inboxOptions,
+					'inbox' => $inbox
 				]
 			);
 		}
@@ -212,7 +231,9 @@ class TicketsController extends Controller
 								'subject' => $subject,
 								'priority' => $priority,
 								'description' => $description,
-								'assetElements' => $assetElements
+								'assetElements' => $assetElements,
+								'inboxOptions' => $inboxOptions,
+								'inbox' => $inbox
 							]
 						);
 					}
@@ -225,7 +246,14 @@ class TicketsController extends Controller
 		}
 
 		// Create ticket
-		$newTicket = HelpdeskSupport::$plugin->{$apiService}->createTicket($user->id, $description, $priority, $subject, $attachmentTokens);
+		if($inbox)
+		{
+			$newTicket = HelpdeskSupport::$plugin->{$apiService}->createTicket($user->id, $description, $priority, $inbox, $subject, $attachmentTokens);
+		}
+		else
+		{
+			$newTicket = HelpdeskSupport::$plugin->{$apiService}->createTicket($user->id, $description, $priority, $subject, $attachmentTokens);
+		}
 		if(!$newTicket)
 		{
 			return $this->renderTemplate(
@@ -236,7 +264,9 @@ class TicketsController extends Controller
 					'subject' => $subject,
 					'priority' => $priority,
 					'description' => $description,
-					'assetElements' => $assetElements
+					'assetElements' => $assetElements,
+					'inboxOptions' => $inboxOptions,
+					'inbox' => $inbox
 				]
 			);
 		}

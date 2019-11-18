@@ -76,6 +76,18 @@
 		required: true})
 	}}
 
+	{% if inboxOptions %}
+		{{ forms.selectField({
+			label: 'Inbox',
+			instructions: '',
+			id: 'inbox',
+			name: 'inbox',
+			options: inboxOptions,
+			value: inbox,
+			required: true})
+		}}
+	{% endif %}
+
 	{{ forms.selectField({
 		label: 'Priority',
 		instructions: 'The urgency with which the ticket should be addressed.',
