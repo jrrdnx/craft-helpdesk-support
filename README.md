@@ -1,6 +1,9 @@
 # Craft Helpdesk Support
 
-Helpdesk support integrations for Craft CMS. Current integrations provided are [Freshdesk](https://freshdesk.com/), [Teamwork Desk](https://www.teamwork.com/desk/), and [Zendesk Support](https://www.zendesk.com/support/).
+Helpdesk support integrations for Craft CMS. Current integrations provided are:
+  - [Freshdesk](https://freshdesk.com/)
+  - [Teamwork Desk](https://www.teamwork.com/desk/)
+  - [Zendesk Support](https://www.zendesk.com/support/)
 
 [Open an Issue](https://github.com/jrrdnx/craft-helpdesk-support/issues) to request an API integration for your platform!
 
@@ -32,7 +35,7 @@ If no matching email address is found, they will be presented with a message to 
 
 In the Control Panel, go to Settings and click on the Helpdesk Support icon to configure this plugin's settings.
 
-Enter your provider, and follow the provider-specific directions to enter your Domain, Username, and/or API Token/Key (depending on your provider, not all of these will be required. If any required settings are not given, users will be presented with a message that one or more settings are missing and a link to update those settings.
+Enter your provider, and follow the provider-specific directions to enter your Domain, Username, and/or API Token/Key (depending on your provider, not all of these will be required). If any required settings are not given, users will be presented with a message that one or more settings are missing and a link to update those settings.
 
 ## Using Helpdesk Support
 
@@ -49,5 +52,3 @@ Or use the main menu's Create New Ticket option to submit a new ticket directly 
 [Open an Issue](https://github.com/jrrdnx/craft-helpdesk-support/issues) to report any bugs or request a new feature or API integration.
 
 Brought to you by [Jarrod D Nix](https://jarrodnix.me)
-
-Icon made by [Smashicons](https://www.flaticon.com/authors/smashicons) from [www.flaticon.com](https://www.flaticon.com)
