@@ -31,10 +31,10 @@ use craft\base\Component;
 class Freshdesk extends Component
 {
 	public $statuses = array(
-		2 => 'Open',
-		3 => 'Pending',
-		4 => 'Resolved',
-		5 => 'Closed'
+		2 => 'open',
+		3 => 'pending',
+		4 => 'resolved',
+		5 => 'closed'
 	);
 
 	public $priorities = array(
@@ -141,14 +141,13 @@ class Freshdesk extends Component
 	public function getTicket(int $ticketId, int $userId)
 	{
 		// Get ticket info
-		$ticket = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId), $this->getAuthOption(), $this->getAuthString(), "get", array("include" => "requester"));
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . "?include=requester"), $this->getAuthOption(), $this->getAuthString());
+		$ticket = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($ticket["http_code"] !== 200)
 		{
 			return null;
 		}
 		$ticket = json_decode($ticket["data"]);
-		// var_dump($ticket);
-		// exit;
 
 		// Don't display ticket if user is not the requester
 		if($userId != $ticket->requester_id) {
@@ -157,7 +156,6 @@ class Freshdesk extends Component
 
 		// Add full names for requester and assignee
 		$ticket->hsRequester = $ticket->requester->name;
-		// $ticket->hsAssignee = ($ticket->assignedTo !== null) ? $ticket->assignedTo->firstName . " " . $ticket->assignedTo->lastName : 'N/A';
 
 		// Normalize ticket properties for list view
 		$ticket->hsSubject = $ticket->subject ? $ticket->subject : $ticket->description_text;
@@ -166,8 +164,22 @@ class Freshdesk extends Component
 		$ticket->hsCreatedAt = $ticket->created_at;
 		$ticket->hsUpdatedAt = $ticket->updated_at;
 
+		// Get assigned to user (why can't this be part of the ticket request, Freshdesk?)
+		$ticket->hsAssignee = 'N/A';
+		if($ticket->responder_id)
+		{
+			$curl2 = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("agents/" . $ticket->responder_id), $this->getAuthOption(), $this->getAuthString());
+			$assignee = HelpdeskSupport::$plugin->core->curlExec($curl2);
+			if($assignee["http_code"] === 200)
+			{
+				$ticket->hsAssignee = json_decode($assignee["data"])->contact->name;
+			}
+		}
+
 		// Get ticket comments (why can't this be part of the ticket request, Freshdesk?)
-		$comments = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . "/conversations"), $this->getAuthOption(), $this->getAuthString(), "get");
+		$curl3 = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . "/conversations"), $this->getAuthOption(), $this->getAuthString());
+		curl_setopt($curl3, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+		$comments = HelpdeskSupport::$plugin->core->curlExec($curl3);
 		if($comments["http_code"] !== 200)
 		{
 			return null;
@@ -182,7 +194,6 @@ class Freshdesk extends Component
 			$attachment->hsSize = $attachment->size;
 		}
 		$ticket->comments = array(
-
 			array(
 				"hsCreatedAt" => $ticket->created_at,
 				"hsAuthor" => $ticket->requester->name,
@@ -191,15 +202,25 @@ class Freshdesk extends Component
 				"attachments" => $ticket->attachments
 			)
 		);
-		// Normalize comments, exclude non-public or non-message
-		foreach($comments as $comment)
+		// Normalize comments, exclude private
+		$commentUserIds = array();
+		foreach($comments as &$comment)
 		{
-			var_dump($comment);
 			if(!$comment->private)
 			{
+				$comment->hsAuthor = '';
+				$comment->hsAuthorImg = '';
+				if($comment->user_id == $userId)
+				{
+					$comment->hsAuthor = $ticket->hsRequester;
+					$comment->hsAuthorImg = '';//$comment->createdBy->avatarURL;
+				}
+				else
+				{
+					$commentUserIds[$comment->user_id] = $comment->user_id;
+				}
+
 				$comment->hsCreatedAt = $comment->created_at;
-				$comment->hsAuthor = '';//$comment->createdBy->firstName . " " . $comment->createdBy->lastName;
-				$comment->hsAuthorImg = '';//$comment->createdBy->avatarURL;
 				$comment->hsBody = $comment->body;
 				if($comment->attachments)
 				{
@@ -210,6 +231,35 @@ class Freshdesk extends Component
 						$attachment->hsSize = $attachment->size;
 					}
 				}
+			}
+		}
+		unset($comment);
+
+		foreach($commentUserIds as $commentUserId)
+		{
+			$curl4 = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("agents/" . $commentUserId), $this->getAuthOption(), $this->getAuthString());
+			$agent = HelpdeskSupport::$plugin->core->curlExec($curl4);
+			if($agent["http_code"] === 200)
+			{
+				foreach($comments as &$comment)
+				{
+					if(!$comment->private)
+					{
+						if($comment->user_id == $commentUserId)
+						{
+							$comment->hsAuthor = json_decode($agent["data"])->contact->name;
+							$comment->hsAuthorImg = '';//$comment->createdBy->avatarURL;
+						}
+					}
+				}
+				unset($comment);
+			}
+		}
+
+		foreach($comments as $comment)
+		{
+			if(!$comment->private)
+			{
 				$ticket->comments[] = $comment;
 			}
 		}
@@ -218,27 +268,37 @@ class Freshdesk extends Component
 	}
 
 	/**
-     * POST an attachment to upload
+     * Builds an array for use in CURLOPT_POSTFIELDS setting when including attachments
      *
-     *     HelpdeskSupport::$plugin->freshdesk->uploadAttachment()
+     *     HelpdeskSupport::$plugin->freshdesk->buildPostFieldsForAttachments()
      *
-     * @return mixed
+     * @return array
      */
-	public function uploadAttachment(int $assetId, int $userId)
+	public function buildPostFieldsForAttachments(array $fields, array $assets)
 	{
-		$asset = Craft::$app->assets->getAssetById((int) $assetId);
-		$response = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("upload/attachment"), $this->getAuthOption(), $this->getAuthString(), "post", array(
-			'file' => $asset->getTransformSource(),
-			'fileName' => $asset->getFilename(),
-			'userId' => $userId,
-			'uploadType' => $asset->getMimeType()
-		));
-		if($response["http_code"] !== 200)
+		$data = "";
+		$eol = "\r\n";
+		$mime_boundary = md5(time());
+		foreach($fields as $fieldName => $fieldValue)
 		{
-			return null;
+			$data .= '--' . $mime_boundary . $eol;
+			$data .= 'Content-Disposition: form-data; name="' . $fieldName . '"' . $eol . $eol;
+			$data .= $fieldValue . $eol;
 		}
+		foreach($assets as $asset)
+		{
+			$data .= '--' . $mime_boundary . $eol;
+			$data .= 'Content-Disposition: form-data; name="attachments[]"; filename="' . $asset->getFilename() . '"' . $eol;
+			$data .= "Content-Type: " . $asset->getMimeType() . $eol . $eol;
+			$data .= file_get_contents($asset->getTransformSource()) . $eol;
+		}
+		$data .= "--" . $mime_boundary . "--" . $eol . $eol;
+		$header = "Content-type: multipart/form-data; boundary=" . $mime_boundary;
 
-		return json_decode($response["data"])->attachment->id;
+		return array(
+			$data,
+			$header
+		);
 	}
 
 	/**
@@ -252,25 +312,26 @@ class Freshdesk extends Component
 	{
 		if(count($attachmentAssets) > 1)
 		{
-			$attachments = array();
-			foreach($attachmentAssets as $asset)
-			{
-				$attachments[] = curl_file_create($asset->getTransformSource(), $asset->getMimeType(), $asset->getFilename());
-			}
-			$response = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets"), $this->getAuthOption(), $this->getAuthString(), "post", array(
+			$postFieldsHeader = $this->buildPostFieldsForAttachments(array(
 				'requester_id' => $userId,
 				'subject' => $subject,
 				'status' => 2,
 				'priority' => $priority,
 				'source' => 1,
-				'description' => $description,
-				'attachments[]' => $attachments
-			));
+				'description' => $description
+			), $attachmentAssets);
+			$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets"), $this->getAuthOption(), $this->getAuthString());
+			curl_setopt($curl, CURLOPT_POST, true);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, $postFieldsHeader[0]);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array($postFieldsHeader[1]));
+			$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		}
 		else
 		if(count($attachmentAssets) == 1)
 		{
-			$response = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets"), $this->getAuthOption(), $this->getAuthString(), "post", array(
+			$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets"), $this->getAuthOption(), $this->getAuthString());
+			curl_setopt($curl, CURLOPT_POST, true);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, array(
 				'requester_id' => $userId,
 				'subject' => $subject,
 				'status' => 2,
@@ -279,26 +340,96 @@ class Freshdesk extends Component
 				'description' => $description,
 				'attachments[]' => curl_file_create($attachmentAssets[0]->getTransformSource(), $attachmentAssets[0]->getMimeType(), $attachmentAssets[0]->getFilename())
 			));
+			$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		}
 		else
 		{
-			$response = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets"), $this->getAuthOption(), $this->getAuthString(), "post", array(
+			$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets"), $this->getAuthOption(), $this->getAuthString());
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+			curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array(
 				'requester_id' => $userId,
 				'subject' => $subject,
 				'status' => 2,
 				'priority' => $priority,
 				'source' => 1,
 				'description' => $description
-			));
+			)));
+			$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		}
-		var_dump($response);
-		exit;
 		if($response["http_code"] !== 201)
 		{
 			return null;
 		}
 
-		var_dump(json_decode($response["data"]));
+		var_dump($response);
+		return json_decode($response["data"]);
+	}
+
+	/**
+     * POST a ticket update
+     *
+     *     HelpdeskSupport::$plugin->freshdesk->updateTicket()
+     *
+     * @return mixed
+     */
+	public function updateTicket(int $ticketId, string $reply, int $userId, array $attachmentAssets = array())
+	{
+		if(count($attachmentAssets) > 1)
+		{
+			$postFieldsHeader = $this->buildPostFieldsForAttachments(array(
+				'body' => $reply,
+				'user_id' => $userId
+			), $attachmentAssets);
+			$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . "/reply"), $this->getAuthOption(), $this->getAuthString());
+			curl_setopt($curl, CURLOPT_POST, true);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, $postFieldsHeader[0]);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array($postFieldsHeader[1]));
+			$response = HelpdeskSupport::$plugin->core->curlExec($curl);
+			if($response["http_code"] !== 201)
+			{
+				return null;
+			}
+		}
+		else
+		if(count($attachmentAssets) == 1)
+		{
+			$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . "/reply"), $this->getAuthOption(), $this->getAuthString());
+			curl_setopt($curl, CURLOPT_POST, true);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, array(
+				'body' => $reply,
+				'user_id' => $userId,
+				'attachments[]' => curl_file_create($attachmentAssets[0]->getTransformSource(), $attachmentAssets[0]->getMimeType(), $attachmentAssets[0]->getFilename())
+			));
+			$response = HelpdeskSupport::$plugin->core->curlExec($curl);
+			if($response["http_code"] !== 201)
+			{
+				return null;
+			}
+		}
+		else
+		{
+			$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId . "/reply"), $this->getAuthOption(), $this->getAuthString());
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+			curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array(
+				'body' => $reply,
+				'user_id' => $userId,
+			)));
+			$response = HelpdeskSupport::$plugin->core->curlExec($curl);
+			if($response["http_code"] !== 201)
+			{
+				return null;
+			}
+		}
+
+		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets/" . $ticketId), $this->getAuthOption(), $this->getAuthString());
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array(
+			'status' => 2,
+			'source' => 1
+		)));
+		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
+
 		return json_decode($response["data"]);
 	}
 
