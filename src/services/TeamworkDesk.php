@@ -88,10 +88,14 @@ class TeamworkDesk extends Component
 
 		foreach(json_decode($response["data"])->inboxes as $inbox)
 		{
-			$return[] = array(
-				'label' => $inbox->name,
-				'value' => $inbox->id
-			);
+			// Exclude the "My Tickets" collection
+			if($inbox->id !== 9999999999)
+			{
+				$return[] = array(
+					'label' => $inbox->name,
+					'value' => $inbox->id
+				);
+			}
 		}
 
 		return $return;
