@@ -30,7 +30,7 @@ use craft\base\Component;
  */
 class TeamworkDesk extends Component
 {
-	public $allowAttachmentsOnCreate = false;
+	public $allowAttachmentsOnCreate = true;
 
     // Public Methods
     // =========================================================================
@@ -248,24 +248,15 @@ class TeamworkDesk extends Component
 	public function createTicket(int $userId, string $description, string $priority, int $inboxId, string $subject = '', array $attachmentTokens = array())
 	{
 		$curl = HelpdeskSupport::$plugin->core->curlInit($this->getUrl("tickets.json"), $this->getAuthOption(), $this->getAuthString());
-		curl_setopt($curl, CURLOPT_POSTFIELDS, array(
-			// 'assignedTo' => '',
-			// 'customerEmail' => $user->email,
-			// 'customerFirstName' => $user->firstName,
-			// 'customerLastName' => $user->lastName,
+		curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query(array(
 			'customerId' => $userId,
 			'inboxId' => $inboxId,
 			'message' => $description,
-			// 'previewTest' => '',
 			'priority' => $priority,
-			// 'source' => '',
 			'status' => 'active',
 			'subject' => $subject,
-			// 'tags' => '',
-			// 'notifyCustomer' => '',
-			// 'oldThreadId' => '',
-			// 'taskId' => ''
-		));
+			'attachmentIds' => $attachmentTokens
+		))));
 		$response = HelpdeskSupport::$plugin->core->curlExec($curl);
 		if($response["http_code"] !== 200)
 		{
