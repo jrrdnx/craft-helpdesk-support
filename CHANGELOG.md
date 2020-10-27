@@ -1,5 +1,9 @@
 # Release Notes for Helpdesk Support
 
+## 1.1.2 - 2020-10-27
+### Fixed
+- Fix version
+
 ## 1.1.1 - 2020-10-27
 ### Fixed
 - Fix Composer 2 compatibility (Fixes #1)
