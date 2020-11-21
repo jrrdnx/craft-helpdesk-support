@@ -443,7 +443,7 @@ class Freshdesk extends Component
 	{
 		$return = array(
 			array(
-				'label' => 'Select priority...',
+				'label' => \Craft::t("helpdesk-support", "select-priority"),
 				'value' => null,
 			)
 		);

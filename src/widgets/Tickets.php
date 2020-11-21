@@ -49,7 +49,7 @@ class Tickets extends Widget
      */
     public static function displayName(): string
     {
-        return Craft::t('helpdesk-support', 'Tickets');
+        return Craft::t('helpdesk-support', 'tickets');
     }
 
     /**

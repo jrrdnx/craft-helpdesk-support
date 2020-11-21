@@ -323,23 +323,23 @@ class ZendeskSupport extends Component
 	{
 		return array(
 			array(
-				'label' => 'Select priority...',
+				'label' => \Craft::t("helpdesk-support", "select-priority"),
 				'value' => null,
 			),
 			array(
-				'label' => 'Urgent',
+				'label' => \Craft::t("helpdesk-support", "priority-level-urgent"),
 				'value' => 'urgent'
 			),
 			array(
-				'label' => 'High',
+				'label' => \Craft::t("helpdesk-support", "priority-level-high"),
 				'value' => 'high'
 			),
 			array(
-				'label' => 'Normal',
+				'label' => \Craft::t("helpdesk-support", "priority-level-normal"),
 				'value' => 'normal'
 			),
 			array(
-				'label' => 'Low',
+				'label' => \Craft::t("helpdesk-support", "priority-level-low"),
 				'value' => 'low'
 			)
 		);

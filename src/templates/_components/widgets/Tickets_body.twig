@@ -38,17 +38,17 @@
 
 {% if userFound == false %}
 
-	<p class="no-user-found">Please contact your Project Manager/Developer to set up a helpdesk account.</p>
+	<p class="no-user-found">{{ "no-user-found"|t('helpdesk-support') }}</p>
 
 {% else %}
 
 	<table class="ticket-list">
 		<thead>
 			<tr>
-				<th>Subject</th>
-				<th>ID</th>
-				<th>Created</th>
-				<th>Last Activity</th>
+				<th>{{ "subject"|t('helpdesk-support') }}</th>
+				<th>{{ "id"|t('helpdesk-support') }}</th>
+				<th>{{ "created"|t('helpdesk-support') }}</th>
+				<th>{{ "last-activity"|t('helpdesk-support') }}</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -60,7 +60,7 @@
 			{% else %}
 				<tr>
 					<td colspan="5">
-						<p class="no-tickets-found">No active tickets found.&nbsp;<a href="{{ url(pluginCpUrl ~ '/create-new-ticket') }}">Create a new ticket</a></p>
+						<p class="no-tickets-found">{{ "no-tickets-found"|t('helpdesk-support') }}.&nbsp;<a href="{{ url(pluginCpUrl ~ '/create-new-ticket') }}">{{ "create-ticket"|t('helpdesk-support') }}</a></p>
 					</td>
 				</tr>
 			{% endif %}
@@ -68,8 +68,8 @@
 	</table>
 
 	<div class="btngroup right">
-		<a href="{{ url(pluginCpUrl ~ '/create-new-ticket') }}" class="btn submit">Create New Ticket</a>
-		<a href="{{ url(pluginCpUrl ~ '/view-tickets') }}" class="btn submit">View All Tickets</a>
+		<a href="{{ url(pluginCpUrl ~ '/create-new-ticket') }}" class="btn submit">{{ "create-new-ticket"|t('helpdesk-support') }}</a>
+		<a href="{{ url(pluginCpUrl ~ '/view-tickets') }}" class="btn submit">{{ "view-all-tickets"|t('helpdesk-support') }}</a>
 	</div>
 
 {% endif %}

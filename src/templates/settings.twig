@@ -18,8 +18,8 @@
 {% do view.registerAssetBundle("jrrdnx\\helpdesksupport\\assetbundles\\helpdesksupport\\HelpdeskSupportAsset") %}
 
 {{ forms.autosuggestField({
-    label: 'Provider',
-    instructions: 'Valid options are \'freshdesk\', \'teamworkdesk\', and \'zendesksupport\'.',
+    label: 'provider'|t('helpdesk-support'),
+    instructions: 'provider-instructions'|t('helpdesk-support'),
     id: 'apiProvider',
     name: 'apiProvider',
     value: settings['apiProvider'],
@@ -27,8 +27,8 @@
 }}
 
 {{ forms.autosuggestField({
-    label: 'Domain',
-    instructions: 'Follow the instructions for your helpdesk platform below...',
+    label: 'domain'|t('helpdesk-support'),
+    instructions: 'domain-instructions'|t('helpdesk-support'),
     id: 'apiDomain',
     name: 'apiDomain',
     value: settings['apiDomain'],
@@ -36,8 +36,8 @@
 }}
 
 {{ forms.autosuggestField({
-    label: 'Username',
-    instructions: 'Follow the instructions for your helpdesk platform below...',
+    label: 'username'|t('helpdesk-support'),
+    instructions: 'username-instructions'|t('helpdesk-support'),
     id: 'apiUsername',
     name: 'apiUsername',
     value: settings['apiUsername'],
@@ -45,29 +45,33 @@
 }}
 
 {{ forms.autosuggestField({
-    label: 'API Token/Key',
-    instructions: 'Follow the instructions for your helpdesk platform below...',
+    label: 'apitoken'|t('helpdesk-support'),
+    instructions: 'apitoken-instructions'|t('helpdesk-support'),
     id: 'apiToken',
     name: 'apiToken',
     value: settings['apiToken'],
 	suggestEnvVars: true})
 }}
 
-<h2>Freshdesk</h2>
-<p><strong>Domain: </strong> <em>(Required)</em> This is the freshdesk.com subdomain associated with your account.</p>
-<p><strong>Username: </strong> <em>(Not Required)</em></p>
-<p><strong>API Token: </strong> <em>(Required)</em> Click your avatar and select Profile Settings. Your pre-determined API key will be listed on the right side.</p>
+<h2>{{ "freshdesk"|t('helpdesk-support') }}</h2>
+<p><strong>{{ 'domain'|t('helpdesk-support') }}: </strong> <em>({{ "required"|t('helpdesk-support') }})</em> {{ "freshdesk-domain-instructions"|t('helpdesk-support') }}</p>
+<p><strong>{{ 'username'|t('helpdesk-support') }}: </strong> <em>({{ "not-required"|t('helpdesk-support') }})</em></p>
+<p><strong>{{ 'apitoken'|t('helpdesk-support') }}: </strong> <em>({{ "required"|t('helpdesk-support') }})</em> {{ "freshdesk-apitoken-instructions"|t('helpdesk-support') }}</p>
 
 <hr />
 
-<h2>Teamwork Desk</h2>
-<p><strong>Domain: </strong> <em>(Required)</em> This is the teamwork.com subdomain associated with your account.</p>
-<p><strong>Username: </strong> <em>(Not Required)</em></p>
-<p><strong>API Token: </strong> <em>(Required)</em> From your Teamwork Desk account, click your avatar and choose "View Profile". On your profile page, choose the API Keys menu (or go to https://YOUR-DOMAIN.teamwork.com/desk/myprofile/apikeys) and create a new <strong><em>v1</em></strong> API key or copy your existing API Key here.</p>
+<h2>{{ "teamwork-desk"|t('helpdesk-support') }}</h2>
+<p><strong>{{ 'domain'|t('helpdesk-support') }}: </strong> <em>({{ "required"|t('helpdesk-support') }})</em> {{ "teamwork-desk-domain-instructions"|t('helpdesk-support') }}</p>
+<p><strong>{{ 'username'|t('helpdesk-support') }}: </strong> <em>({{ "not-required"|t('helpdesk-support') }})</em></p>
+<p><strong>{{ 'apitoken'|t('helpdesk-support') }}: </strong> <em>({{ "required"|t('helpdesk-support') }})</em> {{ "teamwork-desk-apitoken-instructions"|t('helpdesk-support')|raw }}</p>
 
 <hr />
 
-<h2>Zendesk Support</h2>
-<p><strong>Domain: </strong> <em>(Required)</em> This is the zendesk.com subdomain associated with your account.</p>
-<p><strong>Username: </strong> <em>(Required)</em> The email address or the owner or administrator for your account. Certain API endpoints require agent-level access, and this ensures that those endspoints can be accessed. Comments will appear as "[Administrator] submitted on behalf of [End User]".</p>
-<p><strong>API Token: </strong> <em>(Required)</em> From your Zendesk account, choose the Admin navigation in the sidebar. Then under the Channel heading, choose API (or go to https://YOUR-DOMAIN.zendesk.com/agent/admin/api). Enable Token Access if necessary, then add a new API Token.</p>
+<h2>{{ "zendesk-support"|t('helpdesk-support') }}</h2>
+<p><strong>{{ 'domain'|t('helpdesk-support') }}: </strong> <em>({{ "required"|t('helpdesk-support') }})</em> {{ "zendesk-support-domain-instructions"|t('helpdesk-support') }}</p>
+<p><strong>{{ 'username'|t('helpdesk-support') }}: </strong> <em>({{ "required"|t('helpdesk-support') }})</em> {{ "zendesk-support-username-instructions"|t('helpdesk-support') }}</p>
+<p><strong>{{ 'apitoken'|t('helpdesk-support') }}: </strong> <em>({{ "required"|t('helpdesk-support') }})</em> {{ "zendesk-support-apitoken-instructions"|t('helpdesk-support') }}</p>
+
+<br />
+<br />
+<br />

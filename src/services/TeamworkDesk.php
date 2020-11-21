@@ -300,23 +300,23 @@ class TeamworkDesk extends Component
 	{
 		return array(
 			array(
-				'label' => 'Select priority...',
+				'label' => \Craft::t("helpdesk-support", "select-priority"),
 				'value' => null,
 			),
 			array(
-				'label' => 'High',
+				'label' => \Craft::t("helpdesk-support", "priority-level-high"),
 				'value' => 'high'
 			),
 			array(
-				'label' => 'Medium',
+				'label' => \Craft::t("helpdesk-support", "priority-level-medium"),
 				'value' => 'medium'
 			),
 			array(
-				'label' => 'Low',
+				'label' => \Craft::t("helpdesk-support", "priority-level-low"),
 				'value' => 'low'
 			),
 			array(
-				'label' => 'None',
+				'label' => \Craft::t("helpdesk-support", "priority-level-none"),
 				'value' => 'none'
 			),
 		);

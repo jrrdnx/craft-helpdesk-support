@@ -1,5 +1,9 @@
 # Release Notes for Helpdesk Support
 
+## 1.2.0 - 2020-11-20
+### Added
+- Added support for language translations. Please [open an issue](https://github.com/jrrdnx/craft-helpdesk-support/issues) or [submit a pull request](https://github.com/jrrdnx/craft-helpdesk-support/pulls) to add support for additional languages (pull requests preferred).
+
 ## 1.1.2 - 2020-10-27
 ### Fixed
 - Fix version

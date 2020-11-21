@@ -24,7 +24,7 @@
 {% set docsUrl = "https://github.com/jrrdnx/helpdesk-support/blob/master/README.md" %}
 
 {# The title of this CP section #}
-{% set title = "Create New Ticket" %}
+{% set title = "create-new-ticket"|t('helpdesk-support') %}
 
 {# The URL to this plugin's base CP section #}
 {% set pluginCpUrl = url('helpdesk-support') %}
@@ -33,8 +33,8 @@
 {% set iconUrl = view.getAssetManager().getPublishedUrl('@jrrdnx/helpdesksupport/assetbundles/createnewticketcpsection/dist', true) ~ '/img/CreateNewTicket-icon.svg' %}
 
 {% set subnav = {
-    "create-new-ticket": { label: "Create New Ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
-    "view-tickets": { label: "View Tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
+    "create-new-ticket": { label: "create-new-ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
+    "view-tickets": { label: "view-tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
 
 } %}
 {% set selectedSubnavItem = 'create-new-ticket' %}
@@ -68,8 +68,8 @@
 	{% endif %}
 
 	{{ forms.textField({
-		label: 'Subject',
-		instructions: 'Provide a brief description of your request.',
+		label: 'subject'|t('helpdesk-support'),
+		instructions: 'subject-instructions'|t('helpdesk-support'),
 		id: 'subject',
 		name: 'subject',
 		value: subject,
@@ -78,8 +78,8 @@
 
 	{% if inboxOptions %}
 		{{ forms.selectField({
-			label: 'Inbox',
-			instructions: '',
+			label: 'inbox'|t('helpdesk-support'),
+			instructions: 'inbox-instructions'|t('helpdesk-support'),
 			id: 'inbox',
 			name: 'inbox',
 			options: inboxOptions,
@@ -89,8 +89,8 @@
 	{% endif %}
 
 	{{ forms.selectField({
-		label: 'Priority',
-		instructions: 'The urgency with which the ticket should be addressed.',
+		label: 'priority'|t('helpdesk-support'),
+		instructions: 'priority-instructions'|t('helpdesk-support'),
 		id: 'priority',
 		name: 'priority',
 		options: priorityOptions,
@@ -100,8 +100,8 @@
 
 	{{ forms.textareaField({
 		rows: 8,
-		label: 'Description',
-		instructions: 'Please enter the details of your request. Make sure to include specific website urls (e.g. ' ~ craft.app.request.getHostInfo() ~ '/broken-page) if applicable. A member of our support staff will respond as soon as possible.',
+		label: 'description'|t('helpdesk-support'),
+		instructions: 'description-instructions'|t('helpdesk-support'),
 		id: 'description',
 		name: 'description',
 		value: description,
@@ -110,8 +110,8 @@
 
 	{% if showAttachments %}
 		{{ forms.elementSelectField({
-			label: 'Attachments',
-			instructions: '',
+			label: 'attachments'|t('helpdesk-support'),
+			instructions: 'attachments-instructions'|t('helpdesk-support'),
 			id: 'attachments',
 			name: 'attachments',
 			limit: 10,
@@ -121,7 +121,7 @@
 	{% endif %}
 
 	<div class="btngroup submit first">
-		<input type="submit" class="btn submit" value="Create Ticket">
+		<input type="submit" class="btn submit" value="{{ 'create-ticket'|t('helpdesk-support') }}">
 	</div>
 
 {% endset %}
