@@ -160,7 +160,7 @@ class HelpdeskSupport extends Plugin
 		$subNavs = [];
 		$navItem = parent::getCpNavItem();
 
-		$navItem['label'] = "Helpdesk";
+		$navItem['label'] = \Craft::t("helpdesk-support", "helpdesk");
 
 		// Use actual provider icon
 		$navItem['icon'] = "@jrrdnx/helpdesksupport/icon-mask.svg";
@@ -180,11 +180,11 @@ class HelpdeskSupport extends Plugin
 		}
 
 		$subNavs['create-new-ticket'] = [
-			'label' => 'Create New Ticket',
+			'label' => \Craft::t("helpdesk-support", "create-new-ticket"),
 			'url' => 'helpdesk-support/create-new-ticket',
 		];
 		$subNavs['view-tickets'] = [
-			'label' => 'View Tickets',
+			'label' => \Craft::t("helpdesk-support", "view-tickets"),
 			'url' => 'helpdesk-support/view-tickets',
 		];
 

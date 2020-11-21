@@ -22,7 +22,7 @@
 {% set docsUrl = "https://github.com/jrrdnx/helpdesk-support/blob/master/README.md" %}
 
 {# The title of this CP section #}
-{% set title = "Invalid Settings" %}
+{% set title = "invalid-settings"|t('helpdesk-support') %}
 
 {# The URL to this plugin's base CP section #}
 {% set pluginCpUrl = url('helpdesk-support') %}
@@ -31,8 +31,8 @@
 {% set iconUrl = view.getAssetManager().getPublishedUrl('@jrrdnx/helpdesksupport/assetbundles/viewticketscpsection/dist', true) ~ '/img/ViewTickets-icon.svg' %}
 
 {% set subnav = {
-    "create-new-ticket": { label: "Create New Ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
-    "view-tickets": { label: "View Tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
+    "create-new-ticket": { label: "create-new-ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
+    "view-tickets": { label: "view-tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
 } %}
 {% if craft.app.request.getSegment(2) == "create-new-ticket" %}
 	{% set selectedSubnavItem = 'create-new-ticket' %}
@@ -41,7 +41,7 @@
 {% endif %}
 
 {% set crumbs = [
-    { label: "Helpdesk Support", url: url(pluginCpUrl) },
+    { label: "helpdesk-support"|t('helpdesk-support'), url: url(pluginCpUrl) },
 ] %}
 
 {# Content that should appear in the page header#}
@@ -54,6 +54,6 @@
 {# The content of the CP Section#}
 {% set content %}
 
-	<p class="invalid-settings">Helpdesk Support is missing one or more settings. Please <a href="{{ url('settings/plugins/helpdesk-support') }}">update your settings</a></p>
+	<p class="invalid-settings">{{ "helpdesk-support"|t('helpdesk-support') }} {{ "missing-settings"|t('helpdesk-support') }} <a href="{{ url('settings/plugins/helpdesk-support') }}">{{ "update-settings"|t('helpdesk-support') }}</a>.</p>
 
 {% endset %}

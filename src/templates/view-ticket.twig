@@ -24,7 +24,7 @@
 {% set docsUrl = "https://github.com/jrrdnx/helpdesk-support/blob/master/README.md" %}
 
 {# The title of this CP section #}
-{% set title = "View Ticket: " ~ ticket.id %}
+{% set title = "view-ticket"|t('helpdesk-support') ~ ": " ~ ticket.id %}
 
 {# The URL to this plugin's base CP section #}
 {% set pluginCpUrl = url('helpdesk-support') %}
@@ -33,14 +33,14 @@
 {% set iconUrl = view.getAssetManager().getPublishedUrl('@jrrdnx/helpdesksupport/assetbundles/viewticketscpsection/dist', true) ~ '/img/ViewTickets-icon.svg' %}
 
 {% set subnav = {
-    "create-new-ticket": { label: "Create New Ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
-    "view-tickets": { label: "View Tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
+    "create-new-ticket": { label: "create-new-ticket"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/create-new-ticket') },
+    "view-tickets": { label: "view-tickets"|t('helpdesk-support'), url: url(pluginCpUrl ~ '/view-tickets') },
 
 } %}
 {% set selectedSubnavItem = 'view-tickets' %}
 
 {% set crumbs = [
-    { label: "Helpdesk Support", url: url(pluginCpUrl) },
+    { label: "helpdesk-support"|t('helpdesk-support'), url: url(pluginCpUrl) },
 ] %}
 
 {# Content that should appear in the page header#}
@@ -57,43 +57,43 @@
 
 	<div class="ticket-details-sidebar">
 		<div>
-			<span>ID</span>
+			<span>{{ "id"|t('helpdesk-support') }}</span>
 			<span>{{ ticket.id }}</span>
 		</div>
 		<div>
-			<span>Subject</span>
+			<span>{{ "subject"|t('helpdesk-support') }}</span>
 			<span>{{ ticket.hsSubject }}</span>
 		</div>
 		<div>
-			<span>Requester</span>
+			<span>{{ "requester"|t('helpdesk-support') }}</span>
 			<span>{{ ticket.hsRequester }}</span>
 		</div>
 		<div>
-			<span>Created</span>
+			<span>{{ "created"|t('helpdesk-support') }}</span>
 			<span>{{ ticket.hsCreatedAt|date('M j, Y g:ia') }}</span>
 		</div>
 		<div>
-			<span>Last Activity</span>
+			<span>{{ "last-activity"|t('helpdesk-support') }}</span>
 			<span>{{ ticket.hsUpdatedAt|date('M j, Y g:ia') }}</span>
 		</div>
 		<div>
 			<span class="separator"></span>
 		</div>
 		<div>
-			<span>Assigned To</span>
+			<span>{{ "assigned-to"|t('helpdesk-support') }}</span>
 			<span>{{ ticket.hsAssignee ?? 'N/A' }}</span>
 		</div>
 		<div>
-			<span>Status</span>
+			<span>{{ "status"|t('helpdesk-support') }}</span>
 			<span class="helpdesk-support-ticket-status {{ ticket.status }}">{{ ticket.status }}</span>
 		</div>
 		<div>
-			<span>Type</span>
+			<span>{{ "type"|t('helpdesk-support') }}</span>
 			<span>{{ ticket.type ? ticket.type|title : 'N/A' }}
 			</span>
 		</div>
 		<div>
-			<span>Priority</span>
+			<span>{{ "priority"|t('helpdesk-support') }}</span>
 			<span>{{ ticket.priority ? ticket.priority|title : 'N/A' }}
 			</span>
 		</div>
@@ -101,7 +101,7 @@
 			<span class="separator"></span>
 		</div>
 		<div>
-			<span>Attachments</span>
+			<span>{{ "attachments"|t('helpdesk-support') }}</span>
 			<div class="ticket-attachments">
 				{% set numAttachments = 0 %}
 				{% for comment in ticket.comments %}
@@ -133,7 +133,7 @@
 					{% endif %}
 				{% endfor %}
 				{% if numAttachments <= 0 %}
-					<span class="no-attachments">N/A</span>
+					<span class="no-attachments">{{ "na"|t('helpdesk-support') }}</span>
 				{% endif %}
 			</div>
 		</div>
@@ -193,7 +193,7 @@
 
 	{{ forms.textareaField({
 		rows: 6,
-		label: 'Add to Conversation',
+		label: 'add-to-conversation'|t('helpdesk-support'),
 		instructions: '',
 		id: 'reply',
 		name: 'reply',
@@ -202,7 +202,7 @@
 	}}
 
 	{{ forms.elementSelectField({
-		label: 'Attachments',
+		label: 'attachments'|t('helpdesk-support'),
 		instructions: '',
 		id: 'attachments',
 		name: 'attachments',
@@ -212,7 +212,7 @@
 	}}
 
 	<div class="btngroup submit first">
-		<input type="submit" class="btn submit" value="Add Reply">
+		<input type="submit" class="btn submit" value="{{ "add-reply"|t('helpdesk-support') }}">
 	</div>
 
 {% endset %}
