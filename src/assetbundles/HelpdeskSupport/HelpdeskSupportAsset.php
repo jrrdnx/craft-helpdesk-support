@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2019 Jarrod D Nix
  */
 
-namespace jrrdnx\helpdesksupport\assetbundles\HelpdeskSupport;
+namespace jrrdnx\helpdesksupport\assetbundles\helpdesksupport;
 
 use Craft;
 use craft\web\AssetBundle;
