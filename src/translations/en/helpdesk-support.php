@@ -8,8 +8,6 @@
  * @copyright Copyright (c) 2019 Jarrod D Nix
  */
 
-use Craft;
-
 /**
  * Helpdesk Support en Translation
  *
