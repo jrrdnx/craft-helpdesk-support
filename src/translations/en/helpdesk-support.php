@@ -69,7 +69,7 @@ return [
 	'priority-level-low'					=> 'Low',
 	'priority-level-none'					=> 'None',
 	'description'							=> 'Description',
-	'description-instructions'				=> 'Please enter the details of your request. Make sure to include specific website urls (e.g. ' . Craft::$app->request->getHostInfo() . '/broken-page) if applicable. A member of our support staff will respond as soon as possible.', // Keep the call to Craft::$app->request->getHostInfo() to show the user an example on the current domain
+	'description-instructions'				=> 'Please enter the details of your request. Make sure to include specific website urls (e.g. https://your-domain.com/broken-page) if applicable. A member of our support staff will respond as soon as possible.',
 	'attachments'							=> 'Attachments',
 	'attachments-instructions'				=> ' ', // If no instructions are desired, then use a single space; an empty string will result in "attachments-instructions" being displayed to users
 	'create-ticket'							=> 'Create Ticket',
