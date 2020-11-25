@@ -1,5 +1,9 @@
 # Release Notes for Helpdesk Support
 
+## 1.2.2 - 2020-11-25
+### Fixed
+- Removed use of `Craft::$app->request->getHostInfo()` to prevent errors when using CLI commands
+
 ## 1.2.1 - 2020-11-23
 ### Fixed
 - Composer 2 compatibility fixes
