@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2019 Jarrod D Nix
  */
 
-namespace jrrdnx\helpdesksupport\assetbundles\helpdesksupport;
+namespace jrrdnx\helpdesksupport\assetbundles\HelpdeskSupport;
 
 use Craft;
 use craft\web\AssetBundle;
@@ -43,7 +43,7 @@ class HelpdeskSupportAsset extends AssetBundle
     public function init()
     {
         // define the path that your publishable resources live
-        $this->sourcePath = "@jrrdnx/helpdesksupport/assetbundles/helpdesksupport/dist";
+        $this->sourcePath = "@jrrdnx/helpdesksupport/assetbundles/HelpdeskSupport/dist";
 
         // define the dependencies
         $this->depends = [

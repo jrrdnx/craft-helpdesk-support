@@ -11,7 +11,7 @@
 namespace jrrdnx\helpdesksupport\widgets;
 
 use jrrdnx\helpdesksupport\HelpdeskSupport;
-use jrrdnx\helpdesksupport\assetbundles\helpdesksupport\HelpdeskSupportAsset;
+use jrrdnx\helpdesksupport\assetbundles\HelpdeskSupport\HelpdeskSupportAsset;
 
 use Craft;
 use craft\base\Widget;
