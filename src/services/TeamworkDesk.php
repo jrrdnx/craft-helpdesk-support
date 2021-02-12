@@ -117,7 +117,13 @@ class TeamworkDesk extends Component
 			return null;
 		}
 
-		return json_decode($response["data"])->customer;
+		$data = json_decode($response["data"]);
+		if(!property_exists($data, 'customer'))
+		{
+			return null;
+		}
+
+		return $data->customer;
 	}
 
 	/**

@@ -81,7 +81,13 @@ class ZendeskSupport extends Component
 			return null;
 		}
 
-		return json_decode($response["data"])->users[0];
+		$data = json_decode($response["data"]);
+		if(!property_exists($data, 'users') || empty($data->users))
+		{
+			return null;
+		}
+
+		return $data->users[0];
 	}
 
 	/**

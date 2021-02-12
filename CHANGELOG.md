@@ -1,6 +1,10 @@
 # Release Notes for Helpdesk Support
 
-## 1.2.4 - 2020-12-1
+## 1.2.5 - 2020-02-12
+### Fixed
+- Better error handling when `getCurrentUser()` doesn't provide any valid User results (Fixes #4)
+
+## 1.2.4 - 2020-12-11
 ### Fixed
 - Version fix
 
