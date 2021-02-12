@@ -2,7 +2,7 @@
     "name": "jrrdnx/helpdesk-support",
     "description": "Helpdesk support integrations for Craft CMS",
     "type": "craft-plugin",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "keywords": [
         "craft",
         "cms",

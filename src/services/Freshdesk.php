@@ -96,7 +96,13 @@ class Freshdesk extends Component
 			return null;
 		}
 
-		return json_decode($response["data"])[0];
+		$data = json_decode($response["data"]);
+		if(empty($data))
+		{
+			return null;
+		}
+
+		return $data[0];
 	}
 
 	/**
